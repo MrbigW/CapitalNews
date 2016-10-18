@@ -2,18 +2,18 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
+    android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.wrk.capitalnews.activity.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="主页面"
-        android:textColor="@android:color/holo_red_light"
-        android:textSize="25sp"/>
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:text="主页面"-->
+        <!--android:textColor="@android:color/holo_red_light"-->
+        <!--android:textSize="25sp"/>-->
 
 
 </FrameLayout>
