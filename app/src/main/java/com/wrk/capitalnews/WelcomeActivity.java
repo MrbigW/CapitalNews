@@ -1,5 +1,6 @@
 package com.wrk.capitalnews;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.animation.AlphaAnimation;
@@ -9,6 +10,10 @@ import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.widget.RelativeLayout;
 
+import com.wrk.capitalnews.activity.GuideActivity;
+import com.wrk.capitalnews.activity.MainActivity;
+import com.wrk.capitalnews.utils.CacheUtils;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -17,6 +22,8 @@ public class WelcomeActivity extends AppCompatActivity {
 
     @BindView(R.id.rl_welcome_root)
     RelativeLayout rlWelcomeRoot;
+
+    public static final String START_MAIN = "start_main";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +61,16 @@ public class WelcomeActivity extends AppCompatActivity {
 
         @Override
         public void onAnimationEnd(Animation animation) {
+            // 判断是否进入过主页面
+            boolean isStartMain = CacheUtils.getBoolean(WelcomeActivity.this, START_MAIN);
+            if (isStartMain) {
+                startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
+            } else {
+                startActivity(new Intent(WelcomeActivity.this, GuideActivity.class));
+            }
+
+            // 结束当前页面
+            finish();
 
         }
 
