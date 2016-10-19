@@ -18,8 +18,9 @@ import com.wrk.capitalnews.utils.DensityUtil;
 
 public class SettingPager extends BasePager {
 
-    public SettingPager(Context context) {
-        super(context);
+
+    public SettingPager(Context context, int type) {
+        super(context, type);
     }
 
     @Override

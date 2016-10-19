@@ -19,8 +19,9 @@ import com.wrk.capitalnews.utils.DensityUtil;
 
 public class NewsCenterPager extends BasePager {
 
-    public NewsCenterPager(Context context) {
-        super(context);
+
+    public NewsCenterPager(Context context, int type) {
+        super(context, type);
     }
 
     @Override

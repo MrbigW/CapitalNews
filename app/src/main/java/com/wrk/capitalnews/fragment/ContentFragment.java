@@ -33,9 +33,9 @@ public class ContentFragment extends BaseFragment {
 
 
     @BindView(R.id.vp_main_content)
-    NoScrollViewPager  vpMainContent;
+    NoScrollViewPager vpMainContent;
     @BindView(R.id.rg_main)
-    RadioGroup rgMain;
+    public RadioGroup rgMain;
     private Unbinder mBind;
 
     // 各个页面的实例
@@ -56,11 +56,11 @@ public class ContentFragment extends BaseFragment {
         rgMain.check(R.id.rb_home);
 
         mPagers = new ArrayList<>();
-        mPagers.add(new HomePager(mContext));
-        mPagers.add(new NewsCenterPager(mContext));
-        mPagers.add(new ShoppingMallPager(mContext));
-        mPagers.add(new ShoppingCartPager(mContext));
-        mPagers.add(new SettingPager(mContext));
+        mPagers.add(new HomePager(mContext, BasePager.VIEW_TYPE_DRAW));
+        mPagers.add(new NewsCenterPager(mContext, BasePager.VIEW_TYPE_NOML));
+        mPagers.add(new ShoppingMallPager(mContext, BasePager.VIEW_TYPE_NOML));
+        mPagers.add(new ShoppingCartPager(mContext, BasePager.VIEW_TYPE_NOML));
+        mPagers.add(new SettingPager(mContext, BasePager.VIEW_TYPE_NOML));
 
         vpMainContent.setAdapter(new ContentFragPagerAdapter());
 
@@ -102,7 +102,9 @@ public class ContentFragment extends BaseFragment {
         public Object instantiateItem(ViewGroup container, int position) {
 
             BasePager pager = mPagers.get(position);
+
             View rootView = pager.rootView;
+
             pager.initData();
 
             container.addView(rootView);

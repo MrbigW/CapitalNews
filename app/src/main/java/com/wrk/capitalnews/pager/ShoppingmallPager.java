@@ -18,8 +18,9 @@ import com.wrk.capitalnews.utils.DensityUtil;
 
 public class ShoppingMallPager extends BasePager {
 
-    public ShoppingMallPager(Context context) {
-        super(context);
+
+    public ShoppingMallPager(Context context, int type) {
+        super(context, type);
     }
 
     @Override
