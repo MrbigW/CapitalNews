@@ -10,7 +10,6 @@ import android.graphics.Path;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -55,7 +54,7 @@ public class ViewPagerIndicator extends LinearLayout {
     // 默认可见tab的数量
     private static final int COUNT_DEFAULT_TAB = 4;
     // 默认文字颜色
-    private static final int COLOR_TEXT_NORMAL = 0x77000000;
+    private static final int COLOR_TEXT_NORMAL = 0x88000000;
     private static final int COLOR_TEXT_HIGHLIGHT = 0xff000000;
 
     // 三角形最大底边长
@@ -90,7 +89,7 @@ public class ViewPagerIndicator extends LinearLayout {
 
     private void initPaint() {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-        mPaint.setColor(Color.WHITE);
+        mPaint.setColor(Color.RED);
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setPathEffect(new CornerPathEffect(3));
     }
@@ -123,9 +122,6 @@ public class ViewPagerIndicator extends LinearLayout {
 
     @Override
     protected void dispatchDraw(Canvas canvas) {
-
-        Log.e("111", mInitTranslationX + "---" + mTranslationX + "---" +
-                mTriangleHeight + "---" + mTriangleWidth + "---" + getHeight());
 
         canvas.save();
 
