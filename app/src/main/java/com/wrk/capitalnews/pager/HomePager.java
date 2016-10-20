@@ -1,7 +1,10 @@
 package com.wrk.capitalnews.pager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -9,10 +12,12 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.wrk.capitalnews.ChannelsActivity;
 import com.wrk.capitalnews.R;
 import com.wrk.capitalnews.base.BasePager;
 import com.wrk.capitalnews.bean.NewsContentBean;
@@ -22,6 +27,7 @@ import com.wrk.capitalnews.utils.DownLoaderUtils;
 import com.wrk.capitalnews.utils.LogUtil;
 import com.wrk.capitalnews.view.ViewPagerIndicator;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,8 +46,13 @@ import rx.schedulers.Schedulers;
 
 public class HomePager extends BasePager {
 
+    // 指示器
     private ViewPagerIndicator idt_homepager;
+    // viewpager
     private ViewPager vp_homepager;
+    // more
+    private ImageButton ib_leftmenu_more;
+
     private DownLoaderUtils mDownLoaderUtils;
 
     private NewsContentBean mNewsContentBean;
@@ -97,9 +108,7 @@ public class HomePager extends BasePager {
                     @Override
                     public void onNext(String s) {
 
-                        View view = View.inflate(mContext, R.layout.homepager_framlayout, null);
-                        idt_homepager = (ViewPagerIndicator) view.findViewById(R.id.idt_homepager);
-                        vp_homepager = (ViewPager) view.findViewById(R.id.vp_homepager);
+                        View view = initContentView();
 
                         mNewsContentBean = new Gson().fromJson(s, NewsContentBean.class);
 
@@ -115,11 +124,32 @@ public class HomePager extends BasePager {
                         vp_homepager.setAdapter(new HomePagerAdapter());
                         idt_homepager.setViewPager(vp_homepager, 0);
 
+                        // 设置ImageButton点击事件
+                        ib_leftmenu_more.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(mContext, ChannelsActivity.class);
+                                Bundle data = new Bundle();
+                                data.putSerializable("channels", (Serializable) mChildrenBeanList);
+                                intent.putExtras(data);
+                                mContext.startActivity(intent);
+                            }
+                        });
+
                         fl_leftmenu_content.addView(view);
                     }
                 });
 
 
+    }
+
+    @NonNull
+    private View initContentView() {
+        View view = View.inflate(mContext, R.layout.homepager_framlayout, null);
+        idt_homepager = (ViewPagerIndicator) view.findViewById(R.id.idt_homepager);
+        vp_homepager = (ViewPager) view.findViewById(R.id.vp_homepager);
+        ib_leftmenu_more = (ImageButton) view.findViewById(R.id.ib_leftmenu_more);
+        return view;
     }
 
     class HomePagerAdapter extends PagerAdapter {

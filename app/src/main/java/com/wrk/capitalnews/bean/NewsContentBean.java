@@ -1,5 +1,6 @@
 package com.wrk.capitalnews.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -10,7 +11,7 @@ import java.util.List;
  * -------------------=.=------------------------
  */
 
-public class NewsContentBean {
+public class NewsContentBean implements Serializable {
 
     /**
      * retcode : 200
@@ -98,7 +99,7 @@ public class NewsContentBean {
             this.children = children;
         }
 
-        public static class ChildrenBean {
+        public static class ChildrenBean implements Serializable{
             private int id;
             private String title;
             private int type;

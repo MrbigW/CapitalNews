@@ -1,6 +1,5 @@
 package com.wrk.capitalnews.utils;
 
-import okhttp3.OkHttpClient;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -14,11 +13,10 @@ import rx.Subscriber;
 
 public class DownLoaderUtils {
 
-    private OkHttpClient mClient;
     private OkManager okManager;
 
     public DownLoaderUtils() {
-        mClient = new OkHttpClient();
+
         okManager = OkManager.getInstance();
     }
 

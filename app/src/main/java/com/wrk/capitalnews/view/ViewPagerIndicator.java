@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.wrk.capitalnews.R;
+import com.wrk.capitalnews.utils.DensityUtil;
 
 import java.util.List;
 
@@ -32,6 +33,8 @@ import java.util.List;
  */
 
 public class ViewPagerIndicator extends LinearLayout {
+
+    private Context mContext;
 
     private Paint mPaint;
 
@@ -73,7 +76,7 @@ public class ViewPagerIndicator extends LinearLayout {
 
     public ViewPagerIndicator(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
+        this.mContext = context;
         // 获取自定义属性(可见tab的数量)
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.ViewPagerIndicator);
         mTabVisibleCount = array.getInt(R.styleable.ViewPagerIndicator_visible_tab_count, COUNT_DEFAULT_TAB);
@@ -107,17 +110,18 @@ public class ViewPagerIndicator extends LinearLayout {
             LayoutParams lp = (LayoutParams) view.getLayoutParams();
             lp.weight = 0;
 
-            lp.width = getScreenWidth() / mTabVisibleCount;
+            lp.width = (getScreenWidth() - DensityUtil.dip2px(mContext,40))/ mTabVisibleCount;
             view.setLayoutParams(lp);
         }
         setItemClickEvent();
     }
 
+    // 布局的宽度
     private int getScreenWidth() {
         WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-        return displayMetrics.widthPixels;
+        return displayMetrics.widthPixels ;
     }
 
     @Override
@@ -172,7 +176,7 @@ public class ViewPagerIndicator extends LinearLayout {
      */
     public void scroll(int position, float positionOffset) {
 
-        int tabWidth = getWidth() / mTabVisibleCount;
+        int tabWidth = (getWidth()+DensityUtil.dip2px(mContext,22)) / mTabVisibleCount;
         mTranslationX = (int) (tabWidth * (positionOffset + position));
 
         // 容器移动，当tab处于移动至最后一个时
@@ -222,7 +226,7 @@ public class ViewPagerIndicator extends LinearLayout {
         TextView tv = new TextView(getContext());
 
         LayoutParams lp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        lp.width = getScreenWidth() / mTabVisibleCount;
+        lp.width = (getScreenWidth() - DensityUtil.dip2px(mContext,40)) / mTabVisibleCount;
         tv.setText(title);
         tv.setGravity(Gravity.CENTER);
         tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
