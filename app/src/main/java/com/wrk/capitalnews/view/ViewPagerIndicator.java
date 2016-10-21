@@ -110,7 +110,7 @@ public class ViewPagerIndicator extends LinearLayout {
             LayoutParams lp = (LayoutParams) view.getLayoutParams();
             lp.weight = 0;
 
-            lp.width = (getScreenWidth() - DensityUtil.dip2px(mContext,40))/ mTabVisibleCount;
+            lp.width = (getScreenWidth() - DensityUtil.dip2px(mContext, 40)) / mTabVisibleCount;
             view.setLayoutParams(lp);
         }
         setItemClickEvent();
@@ -121,11 +121,14 @@ public class ViewPagerIndicator extends LinearLayout {
         WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-        return displayMetrics.widthPixels ;
+        return displayMetrics.widthPixels;
     }
 
+    private  boolean isFirst = true;
     @Override
     protected void dispatchDraw(Canvas canvas) {
+
+
 
         canvas.save();
 
@@ -135,7 +138,9 @@ public class ViewPagerIndicator extends LinearLayout {
 
         canvas.restore();
 
+
         super.dispatchDraw(canvas);
+
     }
 
 
@@ -176,11 +181,11 @@ public class ViewPagerIndicator extends LinearLayout {
      */
     public void scroll(int position, float positionOffset) {
 
-        int tabWidth = (getWidth()+DensityUtil.dip2px(mContext,22)) / mTabVisibleCount;
+        int tabWidth = (getWidth() + DensityUtil.dip2px(mContext, 22)) / mTabVisibleCount;
         mTranslationX = (int) (tabWidth * (positionOffset + position));
 
         // 容器移动，当tab处于移动至最后一个时
-        if (position >= mTabVisibleCount - 2 && positionOffset > 0 && getChildCount() > mTabVisibleCount) {
+        if (position >= mTabVisibleCount - 2 && positionOffset >= 0 && getChildCount() > mTabVisibleCount) {
 
             if (mTabVisibleCount != 1) {
                 this.scrollTo((int) ((position - (mTabVisibleCount - 2)) * tabWidth + tabWidth * positionOffset), 0);
@@ -205,6 +210,10 @@ public class ViewPagerIndicator extends LinearLayout {
 
     }
 
+    public List<String> getTitles() {
+        return mTitles;
+    }
+
 
     /**
      * 设置可见的tab数量
@@ -226,7 +235,7 @@ public class ViewPagerIndicator extends LinearLayout {
         TextView tv = new TextView(getContext());
 
         LayoutParams lp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        lp.width = (getScreenWidth() - DensityUtil.dip2px(mContext,40)) / mTabVisibleCount;
+        lp.width = (getScreenWidth() - DensityUtil.dip2px(mContext, 40)) / mTabVisibleCount;
         tv.setText(title);
         tv.setGravity(Gravity.CENTER);
         tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
@@ -253,6 +262,8 @@ public class ViewPagerIndicator extends LinearLayout {
         this.mListener = listener;
     }
 
+    int pos = 0;
+
     /**
      * 设置关联的ViewPager
      *
@@ -274,10 +285,15 @@ public class ViewPagerIndicator extends LinearLayout {
 
             @Override
             public void onPageSelected(int position) {
+
+//                scroll(position,0);
+
                 if (mListener != null) {
                     mListener.onPageSelected(position);
                 }
                 highLightTextView(position);
+
+                invalidate();
             }
 
             @Override

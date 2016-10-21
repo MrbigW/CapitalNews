@@ -100,6 +100,14 @@ public class NewsContentBean implements Serializable {
         }
 
         public static class ChildrenBean implements Serializable{
+
+            @Override
+            public String toString() {
+                return "ChildrenBean{" +
+                        "title='" + title + '\'' +
+                        '}';
+            }
+
             private int id;
             private String title;
             private int type;

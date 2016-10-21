@@ -2,13 +2,12 @@ package com.wrk.capitalnews.pager;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -19,12 +18,14 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.wrk.capitalnews.ChannelsActivity;
 import com.wrk.capitalnews.R;
+import com.wrk.capitalnews.activity.MainActivity;
 import com.wrk.capitalnews.base.BasePager;
+import com.wrk.capitalnews.base.HomeDetailBasePager;
 import com.wrk.capitalnews.bean.NewsContentBean;
+import com.wrk.capitalnews.pager.detailPager.TabDetailPager;
+import com.wrk.capitalnews.utils.CacheUtils;
 import com.wrk.capitalnews.utils.Constants;
-import com.wrk.capitalnews.utils.DensityUtil;
 import com.wrk.capitalnews.utils.DownLoaderUtils;
-import com.wrk.capitalnews.utils.LogUtil;
 import com.wrk.capitalnews.view.ViewPagerIndicator;
 
 import java.io.Serializable;
@@ -46,6 +47,7 @@ import rx.schedulers.Schedulers;
 
 public class HomePager extends BasePager {
 
+    private static final String START_HOME = "start_home";
     // 指示器
     private ViewPagerIndicator idt_homepager;
     // viewpager
@@ -53,18 +55,22 @@ public class HomePager extends BasePager {
     // more
     private ImageButton ib_leftmenu_more;
 
-    private DownLoaderUtils mDownLoaderUtils;
+    public DownLoaderUtils mDownLoaderUtils;
 
     private NewsContentBean mNewsContentBean;
 
     private List<NewsContentBean.DataBean.ChildrenBean> mChildrenBeanList;
 
+    private List<HomeDetailBasePager> mPagers;
+
     private ArrayList<String> mTitles;
+    private View mView;
 
     public HomePager(Context context, int type) {
         super(context, type);
         mDownLoaderUtils = new DownLoaderUtils();
         mTitles = new ArrayList<>();
+        mPagers = new ArrayList<>();
     }
 
     @Override
@@ -86,8 +92,8 @@ public class HomePager extends BasePager {
         // 填充主要内容
         initFramContent();
 
-
     }
+
 
     private void initFramContent() {
         // 联网请求数据
@@ -97,12 +103,10 @@ public class HomePager extends BasePager {
                 .subscribe(new Subscriber<String>() {
                     @Override
                     public void onCompleted() {
-
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        LogUtil.e(e.getMessage());
                     }
 
                     @Override
@@ -113,16 +117,37 @@ public class HomePager extends BasePager {
                         mNewsContentBean = new Gson().fromJson(s, NewsContentBean.class);
 
                         mChildrenBeanList = mNewsContentBean.getData().get(0).getChildren();
-                        LogUtil.e(mChildrenBeanList.toString());
+
                         for (int i = 0; i < mChildrenBeanList.size(); i++) {
-                            mTitles.add(mChildrenBeanList.get(i).getTitle());
-                            LogUtil.e(mChildrenBeanList.get(i).getTitle());
+
+                            /**
+                             * 保存频道信息
+                             */
+                            // 判断是否进入过主页面
+                            boolean isStartHome = CacheUtils.getBoolean(mContext, START_HOME);
+                            if (isStartHome) {
+                                String channels = CacheUtils.getChannelsString(mContext, mChildrenBeanList.get(i).getUrl());
+                                if (!TextUtils.isEmpty(channels)) {
+                                    mTitles.add(channels);
+                                    if (channels.equals(mChildrenBeanList.get(i).getTitle())) {
+                                        mPagers.add(new TabDetailPager(mContext, mChildrenBeanList.get(i)));
+                                    }
+
+                                }
+
+                            } else {
+                                CacheUtils.putChannelsString(mContext, mChildrenBeanList.get(i).getUrl(), mChildrenBeanList.get(i).getTitle());
+                                mTitles.add(mChildrenBeanList.get(i).getTitle());
+                                mPagers.add(new TabDetailPager(mContext, mChildrenBeanList.get(i)));
+                            }
+
                         }
 
-                        idt_homepager.setVisibleTabCount(5);
+                        idt_homepager.setVisibleTabCount(4);
                         idt_homepager.setTabItemTitles(mTitles);
                         vp_homepager.setAdapter(new HomePagerAdapter());
                         idt_homepager.setViewPager(vp_homepager, 0);
+
 
                         // 设置ImageButton点击事件
                         ib_leftmenu_more.setOnClickListener(new View.OnClickListener() {
@@ -132,40 +157,42 @@ public class HomePager extends BasePager {
                                 Bundle data = new Bundle();
                                 data.putSerializable("channels", (Serializable) mChildrenBeanList);
                                 intent.putExtras(data);
-                                mContext.startActivity(intent);
+                                ((MainActivity) mContext).startActivityForResult(intent, 0);
+
                             }
                         });
 
                         fl_leftmenu_content.addView(view);
+                        CacheUtils.putBoolean(mContext, START_HOME, true);
                     }
                 });
-
-
     }
+
 
     @NonNull
     private View initContentView() {
-        View view = View.inflate(mContext, R.layout.homepager_framlayout, null);
-        idt_homepager = (ViewPagerIndicator) view.findViewById(R.id.idt_homepager);
-        vp_homepager = (ViewPager) view.findViewById(R.id.vp_homepager);
-        ib_leftmenu_more = (ImageButton) view.findViewById(R.id.ib_leftmenu_more);
-        return view;
+        mView = View.inflate(mContext, R.layout.homepager_framlayout, null);
+        idt_homepager = (ViewPagerIndicator) mView.findViewById(R.id.idt_homepager);
+        vp_homepager = (ViewPager) mView.findViewById(R.id.vp_homepager);
+        ib_leftmenu_more = (ImageButton) mView.findViewById(R.id.ib_leftmenu_more);
+        return mView;
     }
+
 
     class HomePagerAdapter extends PagerAdapter {
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
 
-            TextView tempView = new TextView(mContext);
-            tempView.setText(mTitles.get(position));
-            tempView.setTextColor(Color.YELLOW);
-            tempView.setTextSize(DensityUtil.dip2px(mContext, 15));
-            tempView.setGravity(Gravity.CENTER);
+            TabDetailPager tabDetailPager = (TabDetailPager) mPagers.get(position);
 
-            container.addView(tempView);
+            View rootView = tabDetailPager.rootView;
 
-            return tempView;
+            tabDetailPager.initData();
+
+            container.addView(rootView);
+
+            return rootView;
         }
 
         @Override

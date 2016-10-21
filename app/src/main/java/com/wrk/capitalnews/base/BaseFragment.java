@@ -46,6 +46,9 @@ public abstract class BaseFragment extends Fragment {
 
     public abstract View initView();
 
+    public View getBaseFragmentView() {
+        return initView();
+    }
 
 }
 

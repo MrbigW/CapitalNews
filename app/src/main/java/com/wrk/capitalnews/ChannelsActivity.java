@@ -1,16 +1,18 @@
 package com.wrk.capitalnews;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.wrk.capitalnews.bean.NewsContentBean;
-import com.wrk.capitalnews.utils.LogUtil;
+import com.wrk.capitalnews.utils.CacheUtils;
 import com.wrk.capitalnews.view.NoScrollGridView;
 
 import java.util.ArrayList;
@@ -56,14 +58,41 @@ public class ChannelsActivity extends Activity {
 
         mOtherChannels = new ArrayList<>();
 
+        for (int i = 0; i < mQuickChannels.size(); i++) {
+            if (!CacheUtils.getChannelsString(this, mQuickChannels.get(i).getUrl()).equals(mQuickChannels.get(i).getTitle())) {
+                mOtherChannels.add(mQuickChannels.get(i));
+            }
+        }
+
+        mQuickChannels.removeAll(mOtherChannels);
+
         mQuickChannelsAdapter = new QuickChannelsAdapter1();
         mOtherChannelsAdapter = new OtherChannelsAdapter1();
+
 
         gvChannels.setAdapter(mQuickChannelsAdapter);
         gvChannelsDelete.setAdapter(mOtherChannelsAdapter);
 
+        gvChannels.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent();
+                intent.putExtra("channel", mQuickChannels.get(position).getTitle());
+                intent.putExtra("count", mQuickChannels.size());
+                ChannelsActivity.this.setResult(1, intent);
+                finish();
+            }
+        });
+
+        gvChannelsDelete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+        });
 
     }
+
 
     class QuickChannelsAdapter1 extends BaseAdapter {
         @Override
@@ -90,13 +119,19 @@ public class ChannelsActivity extends Activity {
 
             TextView tvChannelsName = (TextView) convertView.findViewById(R.id.tv_channels_name);
 
+            ivChannelsDelete.setImageResource(R.drawable.delete);
 
             if (isEditing) {
-                ivChannelsDelete.setVisibility(View.VISIBLE);
-                ivChannelsDelete.setEnabled(true);
+                if (position != 0) {
+                    ivChannelsDelete.setVisibility(View.VISIBLE);
+                    ivChannelsDelete.setEnabled(true);
+                }
+                gvChannels.setEnabled(false);
             } else {
-                ivChannelsDelete.setVisibility(View.INVISIBLE);
-                ivChannelsDelete.setEnabled(false);
+                if (position != 0) {
+                    ivChannelsDelete.setVisibility(View.INVISIBLE);
+                    ivChannelsDelete.setEnabled(false);
+                }
             }
 
             tvChannelsName.setText(mQuickChannels.get(position).getTitle());
@@ -106,8 +141,11 @@ public class ChannelsActivity extends Activity {
                 public void onClick(View v) {
                     NewsContentBean.DataBean.ChildrenBean childrenBean = mQuickChannels.get(position);
                     mQuickChannels.remove(childrenBean);
+                    // 修改Sp中频道信息
+                    CacheUtils.putChannelsString(ChannelsActivity.this, childrenBean.getUrl(), "");
+
                     mOtherChannels.add(childrenBean);
-                    LogUtil.e(childrenBean.toString());
+
                     mOtherChannelsAdapter.notifyDataSetChanged();
                     mQuickChannelsAdapter.notifyDataSetChanged();
 
@@ -140,27 +178,30 @@ public class ChannelsActivity extends Activity {
 
             convertView = View.inflate(ChannelsActivity.this, R.layout.gvitem_channels_layout, null);
 
-            ImageView ivChannelsDelete = (ImageView) convertView.findViewById(R.id.iv_channels_delete);
+            ImageView ivChannelsAdd = (ImageView) convertView.findViewById(R.id.iv_channels_delete);
 
             TextView tvChannelsName = (TextView) convertView.findViewById(R.id.tv_channels_name);
 
+            ivChannelsAdd.setImageResource(R.drawable.add);
 
             if (isEditing) {
-                ivChannelsDelete.setVisibility(View.VISIBLE);
-                ivChannelsDelete.setEnabled(true);
+                ivChannelsAdd.setVisibility(View.VISIBLE);
+                ivChannelsAdd.setEnabled(true);
             } else {
-                ivChannelsDelete.setVisibility(View.INVISIBLE);
-                ivChannelsDelete.setEnabled(false);
+                ivChannelsAdd.setVisibility(View.INVISIBLE);
+                ivChannelsAdd.setEnabled(false);
             }
 
             tvChannelsName.setText(mOtherChannels.get(position).getTitle());
 
-            ivChannelsDelete.setOnClickListener(new View.OnClickListener() {
+            ivChannelsAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     NewsContentBean.DataBean.ChildrenBean childrenBean = mOtherChannels.get(position);
                     mOtherChannels.remove(childrenBean);
-                    mQuickChannels.add(childrenBean );
+                    // 修改Sp中频道信息
+                    CacheUtils.putChannelsString(ChannelsActivity.this, childrenBean.getUrl(), childrenBean.getTitle());
+                    mQuickChannels.add(childrenBean);
                     mQuickChannelsAdapter.notifyDataSetChanged();
                     mOtherChannelsAdapter.notifyDataSetChanged();
                 }
@@ -175,6 +216,11 @@ public class ChannelsActivity extends Activity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ib_channels_back:
+                Intent intent = new Intent();
+                Bundle data = new Bundle();
+                data.putSerializable("quickchannels", mQuickChannels);
+                intent.putExtras(data);
+                ChannelsActivity.this.setResult(2, intent);
                 finish();
                 break;
             case R.id.tv_channels_edit:
@@ -189,11 +235,11 @@ public class ChannelsActivity extends Activity {
                     mQuickChannelsAdapter.notifyDataSetChanged();
                     mOtherChannelsAdapter.notifyDataSetChanged();
                 }
-
                 break;
-
         }
     }
+
+
 }
 
 

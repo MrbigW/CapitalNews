@@ -40,14 +40,16 @@ public class ContentFragment extends BaseFragment {
 
     // 各个页面的实例
     private ArrayList<BasePager> mPagers;
+    private View mView;
 
     @Override
     public View initView() {
 
-        View view = View.inflate(mContext, R.layout.content_fragment_layout, null);
-        mBind = ButterKnife.bind(this, view);
-        return view;
+        mView = View.inflate(mContext, R.layout.content_fragment_layout, null);
+        mBind = ButterKnife.bind(this, mView);
+        return mView;
     }
+
 
     @Override
     public void initData() {
@@ -91,6 +93,9 @@ public class ContentFragment extends BaseFragment {
         }
     }
 
+
+    View HomePagerRootView = null;
+
     class ContentFragPagerAdapter extends PagerAdapter {
 
         @Override
@@ -104,6 +109,10 @@ public class ContentFragment extends BaseFragment {
             BasePager pager = mPagers.get(position);
 
             View rootView = pager.rootView;
+
+            if (position == 0) {
+                HomePagerRootView = mPagers.get(0).rootView;
+            }
 
             pager.initData();
 
@@ -121,6 +130,10 @@ public class ContentFragment extends BaseFragment {
         public void destroyItem(ViewGroup container, int position, Object object) {
             container.removeView((View) object);
         }
+    }
+
+    public View getHomePagerRootView() {
+        return HomePagerRootView;
     }
 
 

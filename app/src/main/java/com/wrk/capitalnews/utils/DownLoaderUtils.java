@@ -1,5 +1,12 @@
 package com.wrk.capitalnews.utils;
 
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -13,11 +20,10 @@ import rx.Subscriber;
 
 public class DownLoaderUtils {
 
-    private OkManager okManager;
+    private OkHttpClient mClient;
 
     public DownLoaderUtils() {
-
-        okManager = OkManager.getInstance();
+        mClient = new OkHttpClient();
     }
 
     public Observable<String> getJsonResult(final String path) {
@@ -26,16 +32,59 @@ public class DownLoaderUtils {
             @Override
             public void call(final Subscriber<? super String> subscriber) {
                 if (!subscriber.isUnsubscribed()) {
-                    okManager.asyncJsonStrngByURL(path, new OkManager.Func1() {
+                    // 访问网络操作、
+                    Request request = new Request.Builder().url(path).build();
+                    mClient.newCall(request).enqueue(new Callback() {
                         @Override
-                        public void onResponse(String result) {
-                            subscriber.onNext(result);
-                            subscriber.onCompleted();
+                        public void onFailure(Call call, IOException e) {
+                            subscriber.onError(e);
                         }
 
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            if (response.isSuccessful()) {
+                                subscriber.onNext(response.body().string());
+                            }
+                            // 结束
+                            mClient = null;
+                            subscriber.onCompleted();
+                        }
                     });
                 }
             }
         });
     }
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
