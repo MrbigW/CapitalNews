@@ -4,16 +4,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.wrk.capitalnews.ChannelsActivity;
@@ -26,7 +30,6 @@ import com.wrk.capitalnews.pager.detailPager.TabDetailPager;
 import com.wrk.capitalnews.utils.CacheUtils;
 import com.wrk.capitalnews.utils.Constants;
 import com.wrk.capitalnews.utils.DownLoaderUtils;
-import com.wrk.capitalnews.view.ViewPagerIndicator;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,6 +39,8 @@ import java.util.List;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
+import static com.wrk.capitalnews.R.id.idt_homepager;
 
 /**
  * Created by MrbigW on 2016/10/18.
@@ -49,7 +54,7 @@ public class HomePager extends BasePager {
 
     private static final String START_HOME = "start_home";
     // 指示器
-    private ViewPagerIndicator idt_homepager;
+    private TabLayout mTabLayout;
     // viewpager
     private ViewPager vp_homepager;
     // more
@@ -82,6 +87,8 @@ public class HomePager extends BasePager {
         // 侧滑菜单
         lv_leftmenu_menu.setAdapter(new LeftMenuAdapter());
 
+        lv_leftmenu_menu.setOnItemClickListener(new drawerOnItemClickListener());
+
         ib_leftmenu_menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,9 +96,20 @@ public class HomePager extends BasePager {
             }
         });
 
+
         // 填充主要内容
         initFramContent();
 
+    }
+
+    class drawerOnItemClickListener implements AdapterView.OnItemClickListener {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            TextView textView = (TextView) view.findViewById(R.id.leftmenu_name);
+            Toast.makeText(mContext, textView.getText(), Toast.LENGTH_SHORT).show();
+            leftemenu_drawer.closeDrawer(GravityCompat.START);
+        }
     }
 
 
@@ -129,6 +147,7 @@ public class HomePager extends BasePager {
                                 String channels = CacheUtils.getChannelsString(mContext, mChildrenBeanList.get(i).getUrl());
                                 if (!TextUtils.isEmpty(channels)) {
                                     mTitles.add(channels);
+                                    Log.e("333", channels);
                                     if (channels.equals(mChildrenBeanList.get(i).getTitle())) {
                                         mPagers.add(new TabDetailPager(mContext, mChildrenBeanList.get(i)));
                                     }
@@ -143,10 +162,11 @@ public class HomePager extends BasePager {
 
                         }
 
-                        idt_homepager.setVisibleTabCount(4);
-                        idt_homepager.setTabItemTitles(mTitles);
+
+                        mTabLayout.setupWithViewPager(vp_homepager);
                         vp_homepager.setAdapter(new HomePagerAdapter());
-                        idt_homepager.setViewPager(vp_homepager, 0);
+
+                        mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
 
 
                         // 设置ImageButton点击事件
@@ -172,7 +192,7 @@ public class HomePager extends BasePager {
     @NonNull
     private View initContentView() {
         mView = View.inflate(mContext, R.layout.homepager_framlayout, null);
-        idt_homepager = (ViewPagerIndicator) mView.findViewById(R.id.idt_homepager);
+        mTabLayout = (TabLayout) mView.findViewById(idt_homepager);
         vp_homepager = (ViewPager) mView.findViewById(R.id.vp_homepager);
         ib_leftmenu_more = (ImageButton) mView.findViewById(R.id.ib_leftmenu_more);
         return mView;
@@ -180,6 +200,11 @@ public class HomePager extends BasePager {
 
 
     class HomePagerAdapter extends PagerAdapter {
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mTitles.get(position);
+        }
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {

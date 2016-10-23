@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.wrk.capitalnews.activity.OtherChannelActivity;
 import com.wrk.capitalnews.bean.NewsContentBean;
 import com.wrk.capitalnews.utils.CacheUtils;
 import com.wrk.capitalnews.view.NoScrollGridView;
@@ -87,10 +88,13 @@ public class ChannelsActivity extends Activity {
         gvChannelsDelete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                Intent intent = new Intent(ChannelsActivity.this, OtherChannelActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("otherchannel", mQuickChannels.get(position));
+                intent.putExtras(bundle);
+                startActivity(intent);
             }
         });
-
     }
 
 
@@ -127,6 +131,7 @@ public class ChannelsActivity extends Activity {
                     ivChannelsDelete.setEnabled(true);
                 }
                 gvChannels.setEnabled(false);
+                gvChannelsDelete.setEnabled(false);
             } else {
                 if (position != 0) {
                     ivChannelsDelete.setVisibility(View.INVISIBLE);

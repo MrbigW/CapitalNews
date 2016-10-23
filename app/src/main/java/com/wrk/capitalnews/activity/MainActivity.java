@@ -2,6 +2,7 @@ package com.wrk.capitalnews.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
@@ -17,16 +18,17 @@ import com.wrk.capitalnews.base.HomeDetailBasePager;
 import com.wrk.capitalnews.bean.NewsContentBean;
 import com.wrk.capitalnews.fragment.ContentFragment;
 import com.wrk.capitalnews.pager.detailPager.TabDetailPager;
-import com.wrk.capitalnews.view.ViewPagerIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.wrk.capitalnews.R.id.idt_homepager;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String MAIN_CONTENT_TAG = "main_content_tag";
 
-    private ViewPagerIndicator idt_homepager;
+    private TabLayout mTabLayout;
     private ViewPager vp_homepager;
 
     @Override
@@ -44,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         ContentFragment content = (ContentFragment) getSupportFragmentManager().findFragmentByTag(MAIN_CONTENT_TAG);
         View homePagerRootView = content.getHomePagerRootView();
         vp_homepager = (ViewPager) homePagerRootView.findViewById(R.id.vp_homepager);
-        idt_homepager = (ViewPagerIndicator) homePagerRootView.findViewById(R.id.idt_homepager);
+        mTabLayout = (TabLayout) homePagerRootView.findViewById(idt_homepager);
 
         if (requestCode == 0 && resultCode == 1) {
             String titleFromChannels = data.getStringExtra("channel");
@@ -52,12 +54,10 @@ public class MainActivity extends AppCompatActivity {
             if (!TextUtils.isEmpty(titleFromChannels) && countFromChannnels > 0) {
                 for (int i = 0; i < countFromChannnels; i++) {
 
-                    if (idt_homepager.getTitles().get(i).equals(titleFromChannels)) {
+                    if (mTabLayout.getTabAt(i).getText().equals(titleFromChannels)) {
                         vp_homepager.setCurrentItem(i);
-//                        idt_homepager.invalidate();
-                        vp_homepager.invalidate();
-                        break;
                     }
+
                 }
             }
         }
@@ -80,11 +80,9 @@ public class MainActivity extends AppCompatActivity {
                 mPagers.add(new TabDetailPager(this, mQuickChannels.get(i)));
             }
 
-            idt_homepager.setVisibleTabCount(4);
-            idt_homepager.setTabItemTitles(mTitles);
+            mTabLayout.setupWithViewPager(vp_homepager);
             vp_homepager.setAdapter(new HomePagerAdapter());
-            idt_homepager.setViewPager(vp_homepager, 0);
-
+            mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         }
     }
 
@@ -93,6 +91,11 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> mTitles;
 
     class HomePagerAdapter extends PagerAdapter {
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mTitles.get(position);
+        }
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {

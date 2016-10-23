@@ -14,15 +14,26 @@
         android:orientation="horizontal"
         >
 
-        <com.wrk.capitalnews.view.ViewPagerIndicator
+        <!--<com.wrk.capitalnews.view.ViewPagerIndicator-->
+        <!--android:id="@+id/idt_homepager"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="45dp"-->
+        <!--android:layout_weight="1"-->
+        <!--android:background="@android:color/transparent"-->
+        <!--android:orientation="horizontal"-->
+        <!--custom:visible_tab_count="5">-->
+        <!--</com.wrk.capitalnews.view.ViewPagerIndicator>  -->
+
+        <android.support.design.widget.TabLayout
+            style="@style/MycustomTabLayout"
             android:id="@+id/idt_homepager"
             android:layout_width="0dp"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_gravity="center_vertical"
             android:background="@android:color/transparent"
-            android:orientation="horizontal"
-            custom:visible_tab_count="5">
-        </com.wrk.capitalnews.view.ViewPagerIndicator>
+            >
+        </android.support.design.widget.TabLayout>
 
         <ImageButton
             android:id="@+id/ib_leftmenu_more"
