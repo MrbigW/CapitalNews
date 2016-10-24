@@ -90,7 +90,7 @@ public class ChannelsActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(ChannelsActivity.this, OtherChannelActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("otherchannel", mQuickChannels.get(position));
+                bundle.putSerializable("otherchannel", mOtherChannels.get(position));
                 intent.putExtras(bundle);
                 startActivity(intent);
             }

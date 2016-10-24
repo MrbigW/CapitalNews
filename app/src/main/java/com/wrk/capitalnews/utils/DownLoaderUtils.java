@@ -45,6 +45,7 @@ public class DownLoaderUtils {
                             if (response.isSuccessful()) {
                                 subscriber.onNext(response.body().string());
                             }
+
                             // 结束
                             mClient = null;
                             subscriber.onCompleted();

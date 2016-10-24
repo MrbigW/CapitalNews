@@ -9,7 +9,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -147,7 +146,6 @@ public class HomePager extends BasePager {
                                 String channels = CacheUtils.getChannelsString(mContext, mChildrenBeanList.get(i).getUrl());
                                 if (!TextUtils.isEmpty(channels)) {
                                     mTitles.add(channels);
-                                    Log.e("333", channels);
                                     if (channels.equals(mChildrenBeanList.get(i).getTitle())) {
                                         mPagers.add(new TabDetailPager(mContext, mChildrenBeanList.get(i)));
                                     }

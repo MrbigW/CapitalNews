@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout = (TabLayout) homePagerRootView.findViewById(idt_homepager);
 
         if (requestCode == 0 && resultCode == 1) {
+
             String titleFromChannels = data.getStringExtra("channel");
             int countFromChannnels = data.getIntExtra("count", -1);
             if (!TextUtils.isEmpty(titleFromChannels) && countFromChannnels > 0) {
