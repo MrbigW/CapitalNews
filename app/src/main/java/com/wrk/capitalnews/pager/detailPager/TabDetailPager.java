@@ -1,6 +1,7 @@
 package com.wrk.capitalnews.pager.detailPager;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.PagerAdapter;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -49,6 +51,7 @@ import rx.schedulers.Schedulers;
 
 public class TabDetailPager extends HomeDetailBasePager {
 
+    private static final String READ_ARRAY_ID = "read_array_id";
     private MyListView lv_tabdetail;
 
     private HorizontalScrollViewPager topnews_viewpager;
@@ -91,7 +94,29 @@ public class TabDetailPager extends HomeDetailBasePager {
 
         lv_tabdetail.setOnLoadInterface(new TabDetailILoadListenner());
 
+        lv_tabdetail.setOnItemClickListener(new TabDetailOnItemClickListener());
+
         return view;
+    }
+
+    class TabDetailOnItemClickListener implements AdapterView.OnItemClickListener {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            int realPos = position - 2;
+
+            TabDetailPagerBean.DataBean.NewsBean newsBean = mNewsBeanList.get(realPos);
+
+            // 先把保存的取出来，如果没有保存过，就保存，并刷新适配器
+            String read_array_id = CacheUtils.getString(mContext, READ_ARRAY_ID); // ""
+
+            if (!read_array_id.contains(newsBean.getId() + "")) {
+                // 将之前的要保存
+                CacheUtils.putString(mContext, READ_ARRAY_ID, read_array_id + newsBean.getId() + ",");
+
+                mAdapter.notifyDataSetChanged();
+            }
+        }
     }
 
     class TabDetailILoadListenner implements MyListView.ILoadListenner {
@@ -145,7 +170,7 @@ public class TabDetailPager extends HomeDetailBasePager {
 
         mUrl = Constants.BASE_URL + children.getUrl();
         Log.e("111", mUrl);
-        String saveJson = CacheUtils.getJsonString(mContext, null);
+        String saveJson = CacheUtils.getString(mContext, null);
         if (!TextUtils.isEmpty(saveJson)) {
             processData(saveJson);
         }
@@ -173,7 +198,7 @@ public class TabDetailPager extends HomeDetailBasePager {
 
                     @Override
                     public void onNext(String s) {
-                        CacheUtils.putJsonString(mContext, url, s);
+                        CacheUtils.putString(mContext, url, s);
                         processData(s);
                     }
                 });
@@ -307,7 +332,10 @@ public class TabDetailPager extends HomeDetailBasePager {
 
         @Override
         public int getCount() {
-            return mTopnews.size();
+            if (mTopnews != null && mTopnews.size() > 0) {
+                return mTopnews.size();
+            }
+            return 0;
         }
 
         @Override
@@ -405,7 +433,12 @@ public class TabDetailPager extends HomeDetailBasePager {
             viewHolder.tvTime.setText(newsBean.getPubdate());
             viewHolder.ivIcon.setImageURI(Constants.BASE_URL + newsBean.getListimage());
 
-
+            String saveReadArrayId = CacheUtils.getString(mContext, READ_ARRAY_ID);
+            if (saveReadArrayId.contains(newsBean.getId() + "")) {
+                viewHolder.tvTitle.setTextColor(Color.GRAY);
+            } else {
+                viewHolder.tvTitle.setTextColor(Color.BLACK);
+            }
 
             return convertView;
         }

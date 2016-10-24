@@ -17,7 +17,7 @@ public class CacheUtils {
      * @param key
      * @param values
      */
-    public static void putJsonString(Context context, String key, String values) {
+    public static void putString(Context context, String key, String values) {
         SharedPreferences sp = context.getSharedPreferences("atguigu", Context.MODE_PRIVATE);
         sp.edit().putString(key, values).commit();
     }
@@ -29,7 +29,7 @@ public class CacheUtils {
      * @param key
      * @return
      */
-    public static String getJsonString(Context context, String key) {
+    public static String getString(Context context, String key) {
         SharedPreferences sp = context.getSharedPreferences("atguigu", Context.MODE_PRIVATE);
         return sp.getString(key, "");
     }
