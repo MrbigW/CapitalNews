@@ -1,13 +1,14 @@
 package com.wrk.capitalnews.pager.detailPager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.gson.Gson;
 import com.wrk.capitalnews.R;
+import com.wrk.capitalnews.activity.NewsDetailActivity;
 import com.wrk.capitalnews.base.HomeDetailBasePager;
 import com.wrk.capitalnews.bean.NewsContentBean;
 import com.wrk.capitalnews.bean.TabDetailPagerBean;
@@ -116,6 +118,10 @@ public class TabDetailPager extends HomeDetailBasePager {
 
                 mAdapter.notifyDataSetChanged();
             }
+
+            Intent intent = new Intent(mContext, NewsDetailActivity.class);
+            intent.setData(Uri.parse(Constants.BASE_URL + newsBean.getUrl()));
+            mContext.startActivity(intent);
         }
     }
 
@@ -169,12 +175,10 @@ public class TabDetailPager extends HomeDetailBasePager {
         super.initData();
 
         mUrl = Constants.BASE_URL + children.getUrl();
-        Log.e("111", mUrl);
         String saveJson = CacheUtils.getString(mContext, null);
         if (!TextUtils.isEmpty(saveJson)) {
             processData(saveJson);
         }
-        Log.e("111", mUrl);
         getDataFromNet(mUrl);
     }
 
@@ -349,10 +353,15 @@ public class TabDetailPager extends HomeDetailBasePager {
 
             draweeView.setOnTouchListener(new TopNewsOnTouchListener());
 
+            draweeView.setTag(position);
             draweeView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(mContext, "被点击", Toast.LENGTH_SHORT).show();
+                    int pos = (int) v.getTag();
+                    TabDetailPagerBean.DataBean.TopnewsBean topnewsBean = mTopnews.get(pos);
+                    Intent intent = new Intent(mContext, NewsDetailActivity.class);
+                    intent.setData(Uri.parse(Constants.BASE_URL + topnewsBean.getUrl()));
+                    mContext.startActivity(intent);
                 }
             });
 

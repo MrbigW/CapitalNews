@@ -1,0 +1,221 @@
+package com.wrk.capitalnews.activity;
+
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
+import android.content.DialogInterface;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
+import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.ImageButton;
+import android.widget.PopupWindow;
+import android.widget.ProgressBar;
+
+import com.wrk.capitalnews.R;
+import com.wrk.capitalnews.utils.DensityUtil;
+import com.wrk.capitalnews.view.NewsDetialPopUpWindow;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+public class NewsDetailActivity extends AppCompatActivity {
+
+
+    @BindView(R.id.ib_back)
+    ImageButton ibBack;
+    @BindView(R.id.icon_textsize)
+    ImageButton iconTextsize;
+    @BindView(R.id.icon_share)
+    ImageButton iconShare;
+    @BindView(R.id.pb_load)
+    ProgressBar pbLoad;
+    @BindView(R.id.webview)
+    WebView webview;
+    @BindView(R.id.fab_newsdetail_more)
+    FloatingActionButton fabNewsdetailMore;
+
+    private WebSettings mWebSettings;
+    private NewsDetialPopUpWindow mMPopupWindow;
+    private int screenWidth;
+    private int screenHeight;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_news_detail);
+        ButterKnife.bind(this);
+
+        getScreenWidthAndHeight();
+
+        getData();
+
+    }
+
+    private void getData() {
+        Uri uri = getIntent().getData();
+        if (uri != null) {
+            mWebSettings = webview.getSettings();
+            mWebSettings.setJavaScriptEnabled(true);
+            mWebSettings.setBuiltInZoomControls(true);
+
+            webview.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    super.onPageFinished(view, url);
+                    pbLoad.setVisibility(View.GONE);
+                }
+            });
+            webview.loadUrl(String.valueOf(uri));
+        }
+    }
+
+    @OnClick({R.id.ib_back, R.id.icon_textsize, R.id.icon_share, R.id.fab_newsdetail_more})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.ib_back:
+                finish();
+                break;
+            case R.id.icon_textsize:
+                showChangeTextDialog();
+                break;
+            case R.id.icon_share:
+
+                break;
+            case R.id.fab_newsdetail_more:
+
+                final float x = fabNewsdetailMore.getX() - screenWidth / 2 + fabNewsdetailMore.getWidth() / 2;
+                final float y = DensityUtil.dip2px(this, 180);
+
+                mMPopupWindow = new NewsDetialPopUpWindow(NewsDetailActivity.this);
+
+                mMPopupWindow.setClippingEnabled(true);
+                mMPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                    @Override
+                    public void onDismiss() {
+                        PropertyValuesHolder p1 = PropertyValuesHolder.ofFloat("translationX", -x, 0);
+                        PropertyValuesHolder p2 = PropertyValuesHolder.ofFloat("translationY", -y, 0);
+                        PropertyValuesHolder p3 = PropertyValuesHolder.ofFloat("rotation", 720 - 45, 0);
+                        ObjectAnimator.ofPropertyValuesHolder(fabNewsdetailMore, p1, p2, p3).setDuration(700).start();
+                    }
+                });
+
+                PropertyValuesHolder p1 = PropertyValuesHolder.ofFloat("translationX", 0, -x);
+                PropertyValuesHolder p2 = PropertyValuesHolder.ofFloat("translationY", 0, -y);
+                PropertyValuesHolder p3 = PropertyValuesHolder.ofFloat("rotation", 0, 720 - 45);
+
+                final ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(fabNewsdetailMore, p1, p2, p3);
+                animator.setDuration(700);
+                animator.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+
+                        mMPopupWindow.showAtLocation(webview, Gravity.BOTTOM, 0, 0);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+
+                    }
+                });
+                animator.start();
+
+
+                break;
+        }
+    }
+
+
+
+    public void getScreenWidthAndHeight() {
+        // 得到屏幕的宽和高
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(outMetrics);
+        screenWidth = outMetrics.widthPixels;
+        screenHeight = outMetrics.heightPixels;
+    }
+
+
+    private int tempSuze = 2; //正常
+    private int realSize = tempSuze;
+
+    private void showChangeTextDialog() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+
+        String[] items = {"超大字体", "大字体", "正常字体", "小字体", "超小字体"};
+
+        dialog.setTitle("设置文字大小")
+                .setNegativeButton("取消", null)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        realSize = tempSuze;
+                        changeTextSize(realSize);
+                    }
+                }).setSingleChoiceItems(items, realSize, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                tempSuze = which;
+            }
+        });
+
+        dialog.show();
+
+    }
+
+    private void changeTextSize(int realSize) {
+        switch (realSize) {
+            case 0: // 超大
+                mWebSettings.setTextZoom(200);
+                break;
+            case 1: // 大号
+                mWebSettings.setTextZoom(150);
+                break;
+            case 2: // 正常
+                mWebSettings.setTextZoom(100);
+                break;
+            case 3: // 小号
+                mWebSettings.setTextZoom(75);
+                break;
+            case 4: // 超小
+                mWebSettings.setTextZoom(50);
+                break;
+        }
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

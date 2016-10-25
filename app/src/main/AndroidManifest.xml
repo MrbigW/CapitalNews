@@ -38,6 +38,8 @@
 
         <activity android:name=".activity.OtherChannelActivity">
         </activity>
+        <activity android:name=".activity.NewsDetailActivity">
+        </activity>
     </application>
 
 </manifest>
