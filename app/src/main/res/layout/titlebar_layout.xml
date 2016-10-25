@@ -16,14 +16,27 @@
         android:visibility="gone"/>
 
     <TextView
-        android:textStyle="bold"
         android:id="@+id/tv_basepager_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:text="标题"
         android:textColor="@android:color/white"
-        android:textSize="20sp"/>
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+
+    <ImageButton
+        android:id="@+id/ib_basepager_switch"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:background="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/icon_pic_grid_type"
+        android:visibility="gone"
+        />
 
 
 </RelativeLayout>
