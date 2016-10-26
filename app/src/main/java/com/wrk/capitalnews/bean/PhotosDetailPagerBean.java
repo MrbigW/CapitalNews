@@ -9,6 +9,13 @@ import java.util.List;
  * 作用：xxxx
  */
 public class PhotosDetailPagerBean {
+    @Override
+    public String toString() {
+        return "PhotosDetailPagerBean{" +
+                "retcode=" + retcode +
+                ", data=" + data +
+                '}';
+    }
 
     /**
      * retcode : 200
@@ -104,6 +111,23 @@ public class PhotosDetailPagerBean {
         }
 
         public static class NewsEntity {
+            @Override
+            public String toString() {
+                return "NewsEntity{" +
+                        "id=" + id +
+                        ", title='" + title + '\'' +
+                        ", url='" + url + '\'' +
+                        ", listimage='" + listimage + '\'' +
+                        ", smallimage='" + smallimage + '\'' +
+                        ", largeimage='" + largeimage + '\'' +
+                        ", pubdate='" + pubdate + '\'' +
+                        ", comment=" + comment +
+                        ", commenturl='" + commenturl + '\'' +
+                        ", type='" + type + '\'' +
+                        ", commentlist='" + commentlist + '\'' +
+                        '}';
+            }
+
             private int id;
             private String title;
             private String url;

@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
             mPagers = new ArrayList<>();
             mTitles = new ArrayList<>();
 
-            mQuickChannels = (ArrayList<NewsContentBean.DataBean.ChildrenBean>) data.getSerializableExtra("quickchannels");
+            mQuickChannels = (ArrayList<NewsContentBean.DataEntity.ChildrenEntity>) data.getSerializableExtra("quickchannels");
 
             Log.e("111", mQuickChannels.size() + mQuickChannels.toString());
 
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private List<HomeDetailBasePager> mPagers;
-    private ArrayList<NewsContentBean.DataBean.ChildrenBean> mQuickChannels;
+    private ArrayList<NewsContentBean.DataEntity.ChildrenEntity> mQuickChannels;
     private ArrayList<String> mTitles;
 
     class HomePagerAdapter extends PagerAdapter {

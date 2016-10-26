@@ -4,8 +4,8 @@ import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
 
 import com.google.gson.Gson;
 import com.wrk.capitalnews.R;
@@ -42,8 +42,6 @@ public class NewsCenterPager extends BasePager {
 
     private RecyclerView newscenter_recyclerView;
 
-    private ImageButton ib_basepager_switch;
-
     private boolean isGrid = false;
 
     private NewsCenterRecyclerviewAdapter mAdapter;
@@ -69,8 +67,9 @@ public class NewsCenterPager extends BasePager {
         mView = View.inflate(mContext, R.layout.newscenter_framlayout, null);
 
         newscenter_recyclerView = (RecyclerView) mView.findViewById(R.id.newscenter_recyclerView);
-        ib_basepager_switch = (ImageButton) mView.findViewById(R.id.ib_basepager_switch);
 
+        ib_basepager_switch.setVisibility(View.VISIBLE);
+        tvBasepagerTitle.setText("新闻");
 
     }
 
@@ -99,6 +98,8 @@ public class NewsCenterPager extends BasePager {
 
                         photosUrl = Constants.BASE_URL + newsCenterPagerData.getUrl();
 
+                        Log.e("111", photosUrl);
+
                         getPhotosData(photosUrl);
 
                     }
@@ -126,27 +127,27 @@ public class NewsCenterPager extends BasePager {
                     @Override
                     public void onNext(String s) {
                         PhotosDetailPagerBean bean = new Gson().fromJson(s, PhotosDetailPagerBean.class);
-                        mNewsEntities = bean.getData().getNews();
-                        if (mNewsEntities != null && mNewsEntities.size() > 0) {
 
-                            ib_leftmenu_menu.setOnClickListener(new View.OnClickListener() {
+                        mNewsEntities = bean.getData().getNews();
+                        Log.e("111", mNewsEntities.toString());
+                        if (mNewsEntities != null && mNewsEntities.size() > 0) {
+                            ib_basepager_switch.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
 
                                     if (!isGrid) {
-                                        newscenter_recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
-                                        isGrid = true;
-                                        ib_leftmenu_menu.setImageResource(R.drawable.icon_pic_grid_type);
-                                    } else {
                                         newscenter_recyclerView.setLayoutManager(new GridLayoutManager(mContext, 2));
-
-                                        ib_leftmenu_menu.setImageResource(R.drawable.icon_pic_list_type);
+                                        isGrid = true;
+                                        ib_basepager_switch.setImageResource(R.drawable.icon_pic_list_type);
+                                    } else {
+                                        newscenter_recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
+                                        isGrid = false;
+                                        ib_basepager_switch.setImageResource(R.drawable.icon_pic_grid_type);
                                     }
 
                                 }
                             });
                             newscenter_recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
-
                             mAdapter = new NewsCenterRecyclerviewAdapter(mContext, mNewsEntities);
                             newscenter_recyclerView.setAdapter(mAdapter);
                             flBasepagerContent.addView(mView);

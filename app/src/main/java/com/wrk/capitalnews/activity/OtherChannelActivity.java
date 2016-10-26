@@ -2,6 +2,8 @@ package com.wrk.capitalnews.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.transition.Slide;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -24,16 +26,17 @@ public class OtherChannelActivity extends Activity {
     @BindView(R.id.tv_basepager_title)
     TextView tvBasepagerTitle;
 
-    private NewsContentBean.DataBean.ChildrenBean mChildrenBean;
+    private NewsContentBean.DataEntity.ChildrenEntity mChildrenBean;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_otherchannel);
+        setupWindowAnimations();
         ButterKnife.bind(this);
 
-        mChildrenBean = (NewsContentBean.DataBean.ChildrenBean) getIntent().getSerializableExtra("otherchannel");
+        mChildrenBean = (NewsContentBean.DataEntity.ChildrenEntity) getIntent().getSerializableExtra("otherchannel");
         TabDetailPager tabDetailPager = new TabDetailPager(this, mChildrenBean);
 
         tabDetailPager.initData();
@@ -45,6 +48,17 @@ public class OtherChannelActivity extends Activity {
 
         fgOtherchannel.addView(tabDetailPager.rootView);
 
+    }
+
+    private void setupWindowAnimations() {
+        // 当进入该activity时执行此过渡
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            Slide slideTransition = new Slide();
+            slideTransition.setSlideEdge(Gravity.START);
+            slideTransition.setDuration(500);
+            getWindow().setReenterTransition(slideTransition);
+            getWindow().setExitTransition(slideTransition);
+        }
     }
 
 

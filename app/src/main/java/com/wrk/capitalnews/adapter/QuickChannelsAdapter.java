@@ -23,9 +23,9 @@ import java.util.ArrayList;
 public class QuickChannelsAdapter extends BaseAdapter {
 
     private Context mContext;
-    private ArrayList<NewsContentBean.DataBean.ChildrenBean> mQuickChannels;
+    private ArrayList<NewsContentBean.DataEntity.ChildrenEntity> mQuickChannels;
 
-    private ArrayList<NewsContentBean.DataBean.ChildrenBean> mOtherChannels;
+    private ArrayList<NewsContentBean.DataEntity.ChildrenEntity> mOtherChannels;
 
 
     public boolean isEditing() {
@@ -38,7 +38,7 @@ public class QuickChannelsAdapter extends BaseAdapter {
 
     private boolean isEditing = false;
 
-    public QuickChannelsAdapter(Context context, ArrayList<NewsContentBean.DataBean.ChildrenBean> quickChannles) {
+    public QuickChannelsAdapter(Context context, ArrayList<NewsContentBean.DataEntity.ChildrenEntity> quickChannles) {
         this.mContext = context;
         this.mQuickChannels = quickChannles;
         mOtherChannels = new ArrayList<>();
@@ -91,11 +91,11 @@ public class QuickChannelsAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public ArrayList<NewsContentBean.DataBean.ChildrenBean> getOtherChannels() {
+    public ArrayList<NewsContentBean.DataEntity.ChildrenEntity> getOtherChannels() {
         return mOtherChannels;
     }
 
-    public void setOtherChannels(ArrayList<NewsContentBean.DataBean.ChildrenBean> otherChannels) {
+    public void setOtherChannels(ArrayList<NewsContentBean.DataEntity.ChildrenEntity> otherChannels) {
         mOtherChannels = otherChannels;
     }
 }

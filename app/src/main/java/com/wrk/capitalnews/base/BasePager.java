@@ -13,6 +13,8 @@ import com.wrk.capitalnews.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.wrk.capitalnews.R.id.tv_basepager_title;
+
 /**
  * Created by MrbigW on 2016/10/18.
  * weChat:1024057635
@@ -32,7 +34,7 @@ public class BasePager {
     public Context mContext;
     @BindView(R.id.ib_basepager_menu)
     public ImageButton ibBasepagerMenu;
-    @BindView(R.id.tv_basepager_title)
+    @BindView(tv_basepager_title)
     public TextView tvBasepagerTitle;
     @BindView(R.id.fl_basepager_content)
     public FrameLayout flBasepagerContent;
@@ -43,6 +45,7 @@ public class BasePager {
     public FrameLayout fl_leftmenu_content;
     public ListView lv_leftmenu_menu;
     public DrawerLayout leftemenu_drawer;
+    public ImageButton ib_basepager_switch;
 
     public BasePager(Context context, int type) {
         this.mContext = context;
@@ -60,6 +63,7 @@ public class BasePager {
         switch (type) {
             case VIEW_TYPE_NOML:
                 View nomalView = View.inflate(mContext, R.layout.basepager_layout, null);
+                ib_basepager_switch = (ImageButton) nomalView.findViewById(R.id.ib_basepager_switch);
                 ButterKnife.bind(this, nomalView);
                 return nomalView;
             case VIEW_TYPE_DRAW:

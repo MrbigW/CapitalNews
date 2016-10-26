@@ -39,9 +39,9 @@ public class ChannelsActivity extends Activity {
     NoScrollGridView gvChannelsDelete;
 
     // 快捷频道
-    private ArrayList<NewsContentBean.DataBean.ChildrenBean> mQuickChannels;
+    private ArrayList<NewsContentBean.DataEntity.ChildrenEntity> mQuickChannels;
     // 其他频道
-    private ArrayList<NewsContentBean.DataBean.ChildrenBean> mOtherChannels;
+    private ArrayList<NewsContentBean.DataEntity.ChildrenEntity> mOtherChannels;
 
     private boolean isEditing = false;
 
@@ -55,7 +55,7 @@ public class ChannelsActivity extends Activity {
         ButterKnife.bind(this);
 
         mQuickChannels = new ArrayList<>();
-        mQuickChannels = (ArrayList<NewsContentBean.DataBean.ChildrenBean>) getIntent().getSerializableExtra("channels");
+        mQuickChannels = (ArrayList<NewsContentBean.DataEntity.ChildrenEntity>) getIntent().getSerializableExtra("channels");
 
         mOtherChannels = new ArrayList<>();
 
@@ -144,7 +144,7 @@ public class ChannelsActivity extends Activity {
             ivChannelsDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    NewsContentBean.DataBean.ChildrenBean childrenBean = mQuickChannels.get(position);
+                    NewsContentBean.DataEntity.ChildrenEntity childrenBean = mQuickChannels.get(position);
                     mQuickChannels.remove(childrenBean);
                     // 修改Sp中频道信息
                     CacheUtils.putChannelsString(ChannelsActivity.this, childrenBean.getUrl(), "");
@@ -160,6 +160,7 @@ public class ChannelsActivity extends Activity {
             return convertView;
         }
     }
+
 
     class OtherChannelsAdapter1 extends BaseAdapter {
 
@@ -185,6 +186,7 @@ public class ChannelsActivity extends Activity {
 
             ImageView ivChannelsAdd = (ImageView) convertView.findViewById(R.id.iv_channels_delete);
 
+
             TextView tvChannelsName = (TextView) convertView.findViewById(R.id.tv_channels_name);
 
             ivChannelsAdd.setImageResource(R.drawable.add);
@@ -202,7 +204,7 @@ public class ChannelsActivity extends Activity {
             ivChannelsAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    NewsContentBean.DataBean.ChildrenBean childrenBean = mOtherChannels.get(position);
+                    NewsContentBean.DataEntity.ChildrenEntity childrenBean = mOtherChannels.get(position);
                     mOtherChannels.remove(childrenBean);
                     // 修改Sp中频道信息
                     CacheUtils.putChannelsString(ChannelsActivity.this, childrenBean.getUrl(), childrenBean.getTitle());

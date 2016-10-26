@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.transition.Slide;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
@@ -55,6 +56,9 @@ public class NewsDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_detail);
+
+        setupWindowAnimations();
+
         ButterKnife.bind(this);
 
         getScreenWidthAndHeight();
@@ -243,6 +247,18 @@ public class NewsDetailActivity extends AppCompatActivity {
 
         // 启动分享GUI
         oks.show(this);
+    }
+
+
+    private void setupWindowAnimations() {
+        // 当进入该activity时执行此过渡
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            Slide slideTransition = new Slide();
+            slideTransition.setSlideEdge(Gravity.START);
+            slideTransition.setDuration(500);
+            getWindow().setReenterTransition(slideTransition);
+            getWindow().setExitTransition(slideTransition);
+        }
     }
 }
 

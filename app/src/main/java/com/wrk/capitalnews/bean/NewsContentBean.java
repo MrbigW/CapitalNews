@@ -145,7 +145,7 @@ public class NewsContentBean implements Serializable {
             return children;
         }
 
-        public static class ChildrenEntity {
+        public static class ChildrenEntity implements Serializable{
             private int id;
             private String title;
             private int type;

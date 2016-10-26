@@ -62,7 +62,7 @@ public class TabDetailPager extends HomeDetailBasePager {
 
     private DownLoaderUtils mDownUtils;
 
-    private NewsContentBean.DataBean.ChildrenBean children;
+    private NewsContentBean.DataEntity.ChildrenEntity children;
 
     private List<TabDetailPagerBean.DataBean.NewsBean> mNewsBeanList;
 
@@ -75,7 +75,7 @@ public class TabDetailPager extends HomeDetailBasePager {
 
     private InternalHandler mHandler;
 
-    public TabDetailPager(Context context, NewsContentBean.DataBean.ChildrenBean childrenBean) {
+    public TabDetailPager(Context context, NewsContentBean.DataEntity.ChildrenEntity childrenBean) {
         super(context);
         this.children = childrenBean;
         mNewsBeanList = new ArrayList<>();

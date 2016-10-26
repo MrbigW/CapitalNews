@@ -63,7 +63,7 @@ public class HomePager extends BasePager {
 
     private NewsContentBean mNewsContentBean;
 
-    private List<NewsContentBean.DataBean.ChildrenBean> mChildrenBeanList;
+    private List<NewsContentBean.DataEntity.ChildrenEntity> mChildrenBeanList;
 
     private List<HomeDetailBasePager> mPagers;
 

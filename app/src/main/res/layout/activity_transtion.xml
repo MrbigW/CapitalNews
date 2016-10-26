@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<uk.co.senab.photoview.PhotoView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:src="@drawable/pic_item_list_default"
+    android:id="@+id/iv_photo"
+    android:layout_gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:transitionName="photos"
+    tools:context="com.wrk.capitalnews.activity.ActivityTranstionToActivity">
+
+</uk.co.senab.photoview.PhotoView>
