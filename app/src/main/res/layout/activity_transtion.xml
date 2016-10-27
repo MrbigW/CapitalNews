@@ -1,13 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<uk.co.senab.photoview.PhotoView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:src="@drawable/pic_item_list_default"
-    android:id="@+id/iv_photo"
-    android:layout_gravity="center"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:transitionName="photos"
-    tools:context="com.wrk.capitalnews.activity.ActivityTranstionToActivity">
+    android:layout_height="match_parent">
 
-</uk.co.senab.photoview.PhotoView>
+    <TextView
+        android:layout_below="@+id/iv_photo"
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="新闻内容"
+        android:textColor="@android:color/black"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:transitionName="title"/>
+
+    <uk.co.senab.photoview.PhotoView
+        android:id="@+id/iv_photo"
+        android:layout_width="400dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center"
+        android:src="@drawable/pic_item_list_default"
+        android:transitionName="photos"
+        tools:context="com.wrk.capitalnews.activity.ActivityTranstionToActivity">
+    </uk.co.senab.photoview.PhotoView>
+
+
+</RelativeLayout>
+

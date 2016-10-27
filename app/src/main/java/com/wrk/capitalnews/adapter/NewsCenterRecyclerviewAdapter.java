@@ -3,9 +3,9 @@ package com.wrk.capitalnews.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +17,7 @@ import com.wrk.capitalnews.R;
 import com.wrk.capitalnews.activity.ActivityTranstionToActivity;
 import com.wrk.capitalnews.bean.PhotosDetailPagerBean;
 import com.wrk.capitalnews.utils.Constants;
+import com.wrk.capitalnews.utils.TransitionHelper;
 
 import java.util.List;
 
@@ -60,7 +61,7 @@ public class NewsCenterRecyclerviewAdapter extends RecyclerView.Adapter<NewsCent
         holder.img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                transition(holder.img, position);
+                transition(holder.img, holder.tv_title, position);
             }
         });
     }
@@ -84,15 +85,20 @@ public class NewsCenterRecyclerviewAdapter extends RecyclerView.Adapter<NewsCent
         }
     }
 
-    private void transition(View view, int pos) {
+    private void transition(View view, View view2, int pos) {
         if (Build.VERSION.SDK_INT < 21) {
             Toast.makeText(mContext, "版本过低", Toast.LENGTH_SHORT).show();
         } else {
             Intent intent = new Intent(mContext, ActivityTranstionToActivity.class);
-            intent.setData(Uri.parse(mNewsEntities.get(pos).getLargeimage()));
-            ActivityOptionsCompat optionsCompat =
-                    ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, view, "photos");
-            mContext.startActivity(intent, optionsCompat.toBundle());
+//            intent.setData(Uri.parse(mNewsEntities.get(pos).getLargeimage()));
+            intent.putExtra("imageurl", mNewsEntities.get(pos).getLargeimage());
+            intent.putExtra("title", mNewsEntities.get(pos).getTitle());
+//            ActivityOptionsCompat optionsCompat =
+//                    ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, view, "photos" );
+            final Pair<View, String>[] pairs =
+                    TransitionHelper.createSafeTransitionParticipants((Activity) mContext, true, new Pair<>(view, "photos"), new Pair<>(view2, "title"));
+            ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, pairs);
+            mContext.startActivity(intent, transitionActivityOptions.toBundle());
 
         }
 

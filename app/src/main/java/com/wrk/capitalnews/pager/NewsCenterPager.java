@@ -1,6 +1,7 @@
 package com.wrk.capitalnews.pager;
 
 import android.content.Context;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -42,6 +43,8 @@ public class NewsCenterPager extends BasePager {
 
     private RecyclerView newscenter_recyclerView;
 
+    private SwipeRefreshLayout newscenter_swiperefrelayput;
+
     private boolean isGrid = false;
 
     private NewsCenterRecyclerviewAdapter mAdapter;
@@ -67,9 +70,30 @@ public class NewsCenterPager extends BasePager {
         mView = View.inflate(mContext, R.layout.newscenter_framlayout, null);
 
         newscenter_recyclerView = (RecyclerView) mView.findViewById(R.id.newscenter_recyclerView);
+        newscenter_swiperefrelayput = (SwipeRefreshLayout) mView.findViewById(R.id.newscenter_swiperefrelayput);
+
+        initSwipeRefreshLayout();
 
         ib_basepager_switch.setVisibility(View.VISIBLE);
         tvBasepagerTitle.setText("新闻");
+
+    }
+
+    private void initSwipeRefreshLayout() {
+        // 设置小圈圈的颜色
+        newscenter_swiperefrelayput.
+                setColorSchemeResources(android.R.color.holo_green_light, android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_blue_bright);
+
+        newscenter_swiperefrelayput.setSize(2);
+
+        // 设置下拉刷新的监听
+        newscenter_swiperefrelayput.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getData();
+                newscenter_swiperefrelayput.setRefreshing(false);
+            }
+        });
 
     }
 
@@ -116,7 +140,7 @@ public class NewsCenterPager extends BasePager {
                 .subscribe(new Subscriber<String>() {
                     @Override
                     public void onCompleted() {
-
+                        newscenter_swiperefrelayput.setRefreshing(false);
                     }
 
                     @Override
