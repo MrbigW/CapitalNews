@@ -75,6 +75,7 @@ public class NewsCenterPager extends BasePager {
         initSwipeRefreshLayout();
 
         ib_basepager_switch.setVisibility(View.VISIBLE);
+
         tvBasepagerTitle.setText("新闻");
 
     }
@@ -174,6 +175,9 @@ public class NewsCenterPager extends BasePager {
                             newscenter_recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
                             mAdapter = new NewsCenterRecyclerviewAdapter(mContext, mNewsEntities);
                             newscenter_recyclerView.setAdapter(mAdapter);
+
+                            flBasepagerContent.removeAllViews();
+
                             flBasepagerContent.addView(mView);
 
                         }

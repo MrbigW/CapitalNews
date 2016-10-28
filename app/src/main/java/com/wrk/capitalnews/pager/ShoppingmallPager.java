@@ -1,12 +1,10 @@
 package com.wrk.capitalnews.pager;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.view.Gravity;
-import android.widget.TextView;
+import android.view.View;
 
+import com.wrk.capitalnews.R;
 import com.wrk.capitalnews.base.BasePager;
-import com.wrk.capitalnews.utils.DensityUtil;
 
 /**
  * Created by MrbigW on 2016/10/18.
@@ -27,15 +25,10 @@ public class ShoppingMallPager extends BasePager {
     public void initData() {
         super.initData();
 
-        TextView textView = new TextView(mContext);
-        textView.setText("ShoppingMail Pager");
-        textView.setTextSize(DensityUtil.dip2px(mContext, 20));
-        textView.setGravity(Gravity.CENTER);
-        textView.setTextColor(Color.BLUE);
 
-        tvBasepagerTitle.setText("商城");
+        View view = View.inflate(mContext, R.layout.shopping_pager, null);
 
-        flBasepagerContent.addView(textView);
+        flBasepagerContent.addView(view);
 
     }
 }
