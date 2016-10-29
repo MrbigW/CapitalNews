@@ -19,4 +19,10 @@ public class Constants {
      */
     public static final String NEWS_CONTENER_URL = BASE_URL + "/static/api/news/categories.json";
 
+    /**
+     * 商城请求地址
+     */
+    public static final String WARES_HOT_URL = "http://112.124.22.238:8081/course_api/wares/hot?";
+
+
 }
