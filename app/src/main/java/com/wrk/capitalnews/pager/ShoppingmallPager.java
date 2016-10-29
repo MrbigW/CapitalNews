@@ -1,6 +1,9 @@
 package com.wrk.capitalnews.pager;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -16,10 +19,12 @@ import com.wrk.capitalnews.base.BasePager;
 import com.wrk.capitalnews.bean.ShoppingMallBean;
 import com.wrk.capitalnews.utils.CacheUtils;
 import com.wrk.capitalnews.utils.Constants;
+import com.wrk.capitalnews.utils.DiffCallBack;
 import com.wrk.capitalnews.utils.DownLoaderUtils;
 import com.wrk.capitalnews.utils.LogUtil;
 import com.wrk.capitalnews.utils.ToastUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import rx.Subscriber;
@@ -52,22 +57,20 @@ public class ShoppingMallPager extends BasePager {
     // 共多少页
     private int mTotalPager;
 
-    // 默认状态
-    private static final int STATE_NORMAL = 1;
     // 下拉刷新
-    private static final int STATE_REFRESH = 2;
-    // 上拉加载
-    private static final int STATE_LOADMORE = 3;
+    private static final int STATE_REFRESH = 1;
 
-    private int currentState = STATE_NORMAL;
 
     private List<ShoppingMallBean.Wares> mBeanList;
+    private List<ShoppingMallBean.Wares> refreshData;
 
     private ShoppingMallAdapter mAdapter;
     private String mUrl;
 
     public ShoppingMallPager(Context context, int type) {
         super(context, type);
+        mBeanList = new ArrayList<>();
+        refreshData = new ArrayList<>();
     }
 
     @Override
@@ -96,7 +99,6 @@ public class ShoppingMallPager extends BasePager {
     }
 
     private void getDataFromNet() {
-        currentState = STATE_NORMAL;
         curPage = 1;
         mUrl = Constants.WARES_HOT_URL + "pageSize=" + pageSize + "&curPage=" + curPage;
 
@@ -128,6 +130,7 @@ public class ShoppingMallPager extends BasePager {
 
     }
 
+
     private void processData(String json) {
         ShoppingMallBean mallBean = new Gson().fromJson(json, ShoppingMallBean.class);
 
@@ -135,30 +138,30 @@ public class ShoppingMallPager extends BasePager {
         pageSize = mallBean.getPageSize();
         mTotalPager = mallBean.getTotalCount();
         mBeanList = mallBean.getList();
-
         if (mBeanList != null && mBeanList.size() > 0) {
-            showData();
-        }
-
-    }
-
-    private void showData() {
-        switch (currentState) {
-            case STATE_NORMAL:
-                // 设置适配器
-                mAdapter = new ShoppingMallAdapter(mContext, mBeanList);
-                shopping_recyclerview.setAdapter(mAdapter);
-                break;
-            case STATE_REFRESH:
-                mAdapter.clearData();
-                mAdapter.addData(0, mBeanList);
-                break;
-            case STATE_LOADMORE:
-                mAdapter.addData(mAdapter.getCount(), mBeanList);
-                break;
-
+            // 设置适配器
+            mAdapter = new ShoppingMallAdapter(mContext, mBeanList);
+            shopping_recyclerview.setAdapter(mAdapter);
         }
     }
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case STATE_REFRESH:
+                    //取出Result
+                    DiffUtil.DiffResult diffResult = (DiffUtil.DiffResult) msg.obj;
+                    //利用DiffUtil.DiffResult对象的dispatchUpdatesTo（）方法，传入RecyclerView的Adapter，轻松成为文艺青年
+                    diffResult.dispatchUpdatesTo(mAdapter);
+                    //别忘了将新数据给Adapter
+                    mAdapter.setData(mBeanList);
+                    shopping_refresh.finishRefresh();
+                    break;
+            }
+        }
+    };
+
 
     private void initMaterialRefresh() {
         shopping_refresh.setSunStyle(true);
@@ -180,7 +183,6 @@ public class ShoppingMallPager extends BasePager {
     }
 
     private void loadMore() {
-        currentState = STATE_LOADMORE;
         if (curPage < mTotalPager) {
             curPage += 1;
             mUrl = Constants.WARES_HOT_URL + "pageSize=" + pageSize + "&curPage=" + curPage;
@@ -202,7 +204,7 @@ public class ShoppingMallPager extends BasePager {
                         @Override
                         public void onNext(String s) {
                             CacheUtils.putString(mContext, Constants.WARES_HOT_URL, s);
-                            processData(s);
+                            mAdapter.addData(mBeanList.size(), new Gson().fromJson(s, ShoppingMallBean.class).getList());
                         }
                     });
         } else {
@@ -213,7 +215,6 @@ public class ShoppingMallPager extends BasePager {
 
     private void refreshData() {
         curPage = 1;
-        currentState = STATE_REFRESH;
         mUrl = Constants.WARES_HOT_URL + "pageSize=" + pageSize + "&curPage=" + curPage;
         mDownLoaderUtils = new DownLoaderUtils();
         mDownLoaderUtils.getJsonResult(mUrl)
@@ -222,7 +223,16 @@ public class ShoppingMallPager extends BasePager {
                 .subscribe(new Subscriber<String>() {
                     @Override
                     public void onCompleted() {
-                        shopping_refresh.finishRefresh();
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //放在子线程中计算DiffResult
+                                DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffCallBack(mBeanList, refreshData), true);
+                                Message message = mHandler.obtainMessage(STATE_REFRESH);
+                                message.obj = diffResult;//obj存放DiffResult
+                                message.sendToTarget();
+                            }
+                        }).start();
                     }
 
                     @Override
@@ -233,12 +243,10 @@ public class ShoppingMallPager extends BasePager {
                     @Override
                     public void onNext(String s) {
                         CacheUtils.putString(mContext, Constants.WARES_HOT_URL, s);
-                        processData(s);
+                        refreshData = new Gson().fromJson(s, ShoppingMallBean.class).getList();
                     }
                 });
-
     }
-
 }
 
 

@@ -12,6 +12,16 @@ import java.util.List;
 
 public class ShoppingMallBean {
 
+    @Override
+    public String toString() {
+        return "ShoppingMallBean{" +
+                "totalCount=" + totalCount +
+                ", currentPage=" + currentPage +
+                ", totalPage=" + totalPage +
+                ", pageSize=" + pageSize +
+                ", list=" + list +
+                '}';
+    }
 
     /**
      * totalCount : 28
@@ -80,6 +90,19 @@ public class ShoppingMallBean {
      * 商品类
      */
     public static class Wares {
+
+        @Override
+        public String toString() {
+            return "Wares{" +
+                    "id=" + id +
+                    ", name='" + name + '\'' +
+                    ", imgUrl='" + imgUrl + '\'' +
+                    ", description='" + description + '\'' +
+                    ", price=" + price +
+                    ", sale=" + sale +
+                    '}';
+        }
+
         private int id;
         private String name;
         private String imgUrl;

@@ -1,6 +1,7 @@
 package com.wrk.capitalnews.adapter;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,36 @@ public class ShoppingMallAdapter extends RecyclerView.Adapter<ShoppingMallAdapte
     }
 
     @Override
+    public void onBindViewHolder(ViewHolder holder, int position, List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position);
+        } else {
+            //文艺青年中的文青
+            Bundle payload = (Bundle) payloads.get(0);//取出我们在getChangePayload（）方法返回的bundle
+//            ShoppingMallBean.Wares bean = mWaresList.get(position);//取出新数据源，（可以不用）
+            for (String key : payload.keySet()) {
+                switch (key) {
+                    case "KEY_NAME":
+                        //这里可以用payload里的数据，不过data也是新的 也可以用
+                        holder.tv_name.setText(payload.getString(key));
+                        break;
+                    case "KEY_IMGURL":
+                        Glide.with(mContext).load(payload.getString(key)).placeholder(R.drawable.news_pic_default).into(holder.iv_icon);
+                        break;
+                    case "KEY_PRICE":
+                        holder.tv_price.setText(payload.getString(key));
+                        break;
+                    case "KEY_SALE":
+                        holder.tv_sale.setText(payload.getString(key));
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    @Override
     public int getItemCount() {
         return mWaresList.size();
     }
@@ -60,6 +91,11 @@ public class ShoppingMallAdapter extends RecyclerView.Adapter<ShoppingMallAdapte
     public void clearData() {
         mWaresList.clear();
         notifyItemRangeRemoved(0, mWaresList.size());
+    }
+
+    // 更新数据
+    public void setData(List<ShoppingMallBean.Wares> beanList) {
+        this.mWaresList = beanList;
     }
 
     /**
@@ -73,9 +109,6 @@ public class ShoppingMallAdapter extends RecyclerView.Adapter<ShoppingMallAdapte
         notifyItemRangeChanged(i, mWaresList.size());
     }
 
-    public int getCount() {
-        return mWaresList.size();
-    }
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -95,6 +128,16 @@ public class ShoppingMallAdapter extends RecyclerView.Adapter<ShoppingMallAdapte
             tv_sale = (TextView) itemView.findViewById(R.id.tv_sale);
             btn_buy_now = (Button) itemView.findViewById(R.id.btn_buy_now);
             btn_buy_cart = (Button) itemView.findViewById(R.id.btn_buy_cart);
+
+            btn_buy_cart.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+//                    Toast.makeText(mContext, "立即购买", Toast.LENGTH_SHORT).show();
+//                    ShoppingMallBean.Wares wares = mWaresList.get(getLayoutPosition());
+//                    ShoppingCart cart = mCartProvider.conversion(wares);
+//                    mCartProvider.addData(cart);
+                }
+            });
 
         }
     }
