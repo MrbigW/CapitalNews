@@ -135,6 +135,7 @@ public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapte
     }
 
 
+
     @Override
     public ViewHilder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = View.inflate(mContext, R.layout.item_shopping_cart, null);

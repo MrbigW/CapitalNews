@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -15,8 +16,9 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.wrk.capitalnews.ChannelsActivity;
@@ -29,10 +31,10 @@ import com.wrk.capitalnews.pager.detailPager.TabDetailPager;
 import com.wrk.capitalnews.utils.CacheUtils;
 import com.wrk.capitalnews.utils.Constants;
 import com.wrk.capitalnews.utils.DownLoaderUtils;
+import com.wrk.capitalnews.view.NoScrollViewPager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import rx.Subscriber;
@@ -70,11 +72,18 @@ public class HomePager extends BasePager {
     private ArrayList<String> mTitles;
     private View mView;
 
+    private Fragment contentFrg;
+    private NoScrollViewPager mViewPager;
+    private RadioGroup mRadioGroup;
+
     public HomePager(Context context, int type) {
         super(context, type);
         mDownLoaderUtils = new DownLoaderUtils();
         mTitles = new ArrayList<>();
         mPagers = new ArrayList<>();
+        contentFrg = ((MainActivity) mContext).getContentFragment();
+        mViewPager = (NoScrollViewPager) contentFrg.getView().findViewById(R.id.vp_main_content);
+        mRadioGroup = (RadioGroup) contentFrg.getView().findViewById(R.id.rg_main);
     }
 
     @Override
@@ -99,14 +108,23 @@ public class HomePager extends BasePager {
         // 填充主要内容
         initFramContent();
 
+
     }
+
+    private int[] radioButtons = {R.id.rg_main,
+            R.id.rb_news,
+            R.id.rb_shopping_mall,
+            R.id.rb_shopping_cart,
+            R.id.rb_setting};
 
     class drawerOnItemClickListener implements AdapterView.OnItemClickListener {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            TextView textView = (TextView) view.findViewById(R.id.leftmenu_name);
-            Toast.makeText(mContext, textView.getText(), Toast.LENGTH_SHORT).show();
+            if (position != 0) {
+                mViewPager.setCurrentItem(position);
+                mRadioGroup.check(radioButtons[position]);
+            }
             leftemenu_drawer.closeDrawer(GravityCompat.START);
         }
     }
@@ -240,7 +258,6 @@ public class HomePager extends BasePager {
             R.drawable.smartservice_press,
             R.drawable.govaffair_press,
             R.drawable.setting_press};
-    private List<String> items = Arrays.asList("首页", "帐号", "喜爱", "朋友", "设置");
 
     class LeftMenuAdapter extends BaseAdapter {
 
@@ -266,9 +283,10 @@ public class HomePager extends BasePager {
 
             TextView leftmenu_name = (TextView) convertView.findViewById(R.id.leftmenu_name);
             ImageView leftmenu_image = (ImageView) convertView.findViewById(R.id.leftmenu_image);
+            RadioButton radioButton = (RadioButton) mRadioGroup.getChildAt(position);
 
             leftmenu_image.setImageResource(images[position]);
-            leftmenu_name.setText(items.get(position));
+            leftmenu_name.setText(radioButton.getText());
 
             return convertView;
         }

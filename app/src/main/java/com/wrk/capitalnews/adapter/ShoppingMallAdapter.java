@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +17,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.wrk.capitalnews.R;
+import com.wrk.capitalnews.bean.ShoppingCart;
 import com.wrk.capitalnews.bean.ShoppingMallBean;
+import com.wrk.capitalnews.pay.MyAliPay;
 import com.wrk.capitalnews.utils.CartProvider;
+import com.wrk.capitalnews.utils.ToastUtil;
 import com.wrk.capitalnews.view.BuyPopUpWindow;
 import com.wrk.capitalnews.view.NumAddSubView;
 
@@ -39,6 +43,8 @@ public class ShoppingMallAdapter extends RecyclerView.Adapter<ShoppingMallAdapte
 
     private CartProvider mCartProvider;
 
+    private MyAliPay mAliPay;
+
     private RelativeLayout rl_view;
 
     private BuyPopUpWindow mBuyPopUpWindow;
@@ -48,6 +54,7 @@ public class ShoppingMallAdapter extends RecyclerView.Adapter<ShoppingMallAdapte
         this.mWaresList = beanList;
         this.mCartProvider = new CartProvider(mContext);
         this.rl_view = rl_view;
+        mAliPay = new MyAliPay(context);
     }
 
     @Override
@@ -68,38 +75,63 @@ public class ShoppingMallAdapter extends RecyclerView.Adapter<ShoppingMallAdapte
         holder.btn_buy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                mBuyPopUpWindow = new BuyPopUpWindow(mContext);
-
-                mBuyPopUpWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-                    @Override
-                    public void onDismiss() {
-                        lightOn();
-                    }
-                });
-
-                ImageView iv_icon = (ImageView) mBuyPopUpWindow.getContentView().findViewById(R.id.iv_icon);
-                TextView tv_name = (TextView) mBuyPopUpWindow.getContentView().findViewById(R.id.tv_name);
-                TextView tv_price = (TextView) mBuyPopUpWindow.getContentView().findViewById(R.id.tv_price);
-                TextView tv_sale = (TextView) mBuyPopUpWindow.getContentView().findViewById(R.id.tv_sale);
-                NumAddSubView count = (NumAddSubView) mBuyPopUpWindow.getContentView().findViewById(R.id.nasv_count);
-                Button btn_buy_now = (Button) mBuyPopUpWindow.getContentView().findViewById(R.id.btn_buy_now);
-                Button btn_buy_cart = (Button) mBuyPopUpWindow.getContentView().findViewById(R.id.btn_buy_cart);
-
-                iv_icon.setImageDrawable(holder.iv_icon.getDrawable());
-                tv_name.setText(holder.tv_name.getText());
-                tv_price.setText(holder.tv_price.getText());
-                tv_sale.setText(holder.tv_sale.getText());
-                count.setMaxValue(15);
-                count.setMinValue(1);
-                count.setValue(1);
-
-
-                mBuyPopUpWindow.showAtLocation(rl_view, Gravity.BOTTOM, 0, 0);
-                lightOff();
+                initBuyPopWindow(holder, position);
             }
         });
 
+    }
+
+    private void initBuyPopWindow(ViewHolder holder, final int position) {
+        mBuyPopUpWindow = new BuyPopUpWindow(mContext);
+
+        mBuyPopUpWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                lightOn();
+            }
+        });
+
+        ImageView iv_icon = (ImageView) mBuyPopUpWindow.getContentView().findViewById(R.id.iv_icon);
+        TextView tv_name = (TextView) mBuyPopUpWindow.getContentView().findViewById(R.id.tv_name);
+        TextView tv_price = (TextView) mBuyPopUpWindow.getContentView().findViewById(R.id.tv_price);
+        TextView tv_sale = (TextView) mBuyPopUpWindow.getContentView().findViewById(R.id.tv_sale);
+        final NumAddSubView count = (NumAddSubView) mBuyPopUpWindow.getContentView().findViewById(R.id.nasv_count);
+        Button btn_buy_now = (Button) mBuyPopUpWindow.getContentView().findViewById(R.id.btn_buy_now);
+        Button btn_buy_cart = (Button) mBuyPopUpWindow.getContentView().findViewById(R.id.btn_buy_cart);
+
+        iv_icon.setImageDrawable(holder.iv_icon.getDrawable());
+        tv_name.setText(holder.tv_name.getText());
+        tv_price.setText(holder.tv_price.getText());
+        tv_sale.setText(holder.tv_sale.getText());
+        count.setMaxValue(15);
+        count.setMinValue(1);
+        count.setValue(1);
+
+        btn_buy_now.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAliPay.pay(v, mWaresList.get(position).getName(), "", mWaresList.get(position).getPrice() * count.getValue() + "");
+                if (TextUtils.equals(mAliPay.getResultStatus(), "9000")) {
+                    mBuyPopUpWindow.dismiss();
+                }
+            }
+        });
+
+        btn_buy_cart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (int i = 0; i < count.getValue(); i++) {
+                    ShoppingMallBean.Wares wares = mWaresList.get(position);
+                    ShoppingCart cart = mCartProvider.conversion(wares);
+                    mCartProvider.addData(cart);
+                }
+                mBuyPopUpWindow.dismiss();
+                ToastUtil.showToast(mContext,"亲,添加成功啦,去购物车结算吧~~~");
+            }
+        });
+
+        mBuyPopUpWindow.showAtLocation(rl_view, Gravity.BOTTOM, 0, 0);
+        lightOff();
     }
 
 

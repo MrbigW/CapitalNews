@@ -141,6 +141,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * 得到contentFragment
+     *
+     * @return
+     */
+    public ContentFragment getContentFragment() {
+        return (ContentFragment) getSupportFragmentManager().findFragmentByTag(MAIN_CONTENT_TAG);
+    }
+
 }
 
 
