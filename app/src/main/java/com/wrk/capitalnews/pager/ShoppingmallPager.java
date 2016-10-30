@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
@@ -45,6 +46,8 @@ public class ShoppingMallPager extends BasePager {
     private MaterialRefreshLayout shopping_refresh;
 
     private RecyclerView shopping_recyclerview;
+
+    private RelativeLayout rl_view;
 
     private ProgressBar pb_loading;
 
@@ -84,6 +87,7 @@ public class ShoppingMallPager extends BasePager {
         shopping_refresh = (MaterialRefreshLayout) view.findViewById(R.id.shopping_refresh);
         shopping_recyclerview = (RecyclerView) view.findViewById(R.id.shopping_recyclerview);
         pb_loading = (ProgressBar) view.findViewById(R.id.pb_loading);
+        rl_view = (RelativeLayout) view.findViewById(R.id.rl_view);
 
         flBasepagerContent.removeAllViews();
 
@@ -140,7 +144,7 @@ public class ShoppingMallPager extends BasePager {
         mBeanList = mallBean.getList();
         if (mBeanList != null && mBeanList.size() > 0) {
             // 设置适配器
-            mAdapter = new ShoppingMallAdapter(mContext, mBeanList);
+            mAdapter = new ShoppingMallAdapter(mContext, mBeanList, rl_view);
             shopping_recyclerview.setAdapter(mAdapter);
         }
     }

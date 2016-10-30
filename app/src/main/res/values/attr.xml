@@ -7,4 +7,15 @@
         <attr name="visible_tab_count" />
     </declare-styleable>
 
+    <declare-styleable name="NumAddSubView">
+
+        <attr name="value" format="integer|reference"/>
+        <attr name="minValue" format="integer|reference"/>
+        <attr name="maxValue" format="integer|reference"/>
+        <attr name="add_bg" format="reference"/>
+        <attr name="sub_bg" format="reference"/>
+        <attr name="num_bg" format="reference"/>
+
+    </declare-styleable>
+
 </resources>

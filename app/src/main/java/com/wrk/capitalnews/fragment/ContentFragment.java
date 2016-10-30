@@ -1,6 +1,7 @@
 package com.wrk.capitalnews.fragment;
 
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
@@ -67,6 +68,30 @@ public class ContentFragment extends BaseFragment {
         vpMainContent.setAdapter(new ContentFragPagerAdapter());
 
         rgMain.setOnCheckedChangeListener(new ContentFragOnCheckedChangeListener());
+
+        // 取消数据预加载
+        vpMainContent.addOnPageChangeListener(new MyOnpageChangeListenter());
+//        mPagers.get(0).initData();
+    }
+
+    class MyOnpageChangeListenter implements ViewPager.OnPageChangeListener {
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            if (position == 3) {
+                mPagers.get(position).initData();
+            }
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
     }
 
     class ContentFragOnCheckedChangeListener implements RadioGroup.OnCheckedChangeListener {

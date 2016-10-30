@@ -37,6 +37,10 @@
         <item name="textAllCaps">false</item>
     </style>
 
+    <style name="BuyPopAnim">
+        <item name="android:windowEnterAnimation">@anim/pop_in</item>
+        <item name="android:windowExitAnimation">@anim/pop_out</item>
+    </style>
 
 
 </resources>

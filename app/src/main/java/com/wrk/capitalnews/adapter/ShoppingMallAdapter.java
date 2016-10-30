@@ -1,17 +1,25 @@
 package com.wrk.capitalnews.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.wrk.capitalnews.R;
 import com.wrk.capitalnews.bean.ShoppingMallBean;
+import com.wrk.capitalnews.utils.CartProvider;
+import com.wrk.capitalnews.view.BuyPopUpWindow;
+import com.wrk.capitalnews.view.NumAddSubView;
 
 import java.util.List;
 
@@ -29,9 +37,17 @@ public class ShoppingMallAdapter extends RecyclerView.Adapter<ShoppingMallAdapte
 
     private List<ShoppingMallBean.Wares> mWaresList;
 
-    public ShoppingMallAdapter(Context context, List<ShoppingMallBean.Wares> beanList) {
+    private CartProvider mCartProvider;
+
+    private RelativeLayout rl_view;
+
+    private BuyPopUpWindow mBuyPopUpWindow;
+
+    public ShoppingMallAdapter(Context context, List<ShoppingMallBean.Wares> beanList, RelativeLayout rl_view) {
         this.mContext = context;
         this.mWaresList = beanList;
+        this.mCartProvider = new CartProvider(mContext);
+        this.rl_view = rl_view;
     }
 
     @Override
@@ -43,12 +59,49 @@ public class ShoppingMallAdapter extends RecyclerView.Adapter<ShoppingMallAdapte
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        Glide.with(mContext).load(mWaresList.get(position).getImgUrl()).placeholder(R.drawable.news_pic_default).into(holder.iv_icon);
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
+        Glide.with(mContext).load(mWaresList.get(position).getImgUrl()).placeholder(R.drawable.pic_item_list_default).into(holder.iv_icon);
         holder.tv_name.setText(mWaresList.get(position).getName());
         holder.tv_price.setText(mWaresList.get(position).getPrice() + "");
         holder.tv_sale.setText("销量：" + mWaresList.get(position).getSale() + "");
+
+        holder.btn_buy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                mBuyPopUpWindow = new BuyPopUpWindow(mContext);
+
+                mBuyPopUpWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                    @Override
+                    public void onDismiss() {
+                        lightOn();
+                    }
+                });
+
+                ImageView iv_icon = (ImageView) mBuyPopUpWindow.getContentView().findViewById(R.id.iv_icon);
+                TextView tv_name = (TextView) mBuyPopUpWindow.getContentView().findViewById(R.id.tv_name);
+                TextView tv_price = (TextView) mBuyPopUpWindow.getContentView().findViewById(R.id.tv_price);
+                TextView tv_sale = (TextView) mBuyPopUpWindow.getContentView().findViewById(R.id.tv_sale);
+                NumAddSubView count = (NumAddSubView) mBuyPopUpWindow.getContentView().findViewById(R.id.nasv_count);
+                Button btn_buy_now = (Button) mBuyPopUpWindow.getContentView().findViewById(R.id.btn_buy_now);
+                Button btn_buy_cart = (Button) mBuyPopUpWindow.getContentView().findViewById(R.id.btn_buy_cart);
+
+                iv_icon.setImageDrawable(holder.iv_icon.getDrawable());
+                tv_name.setText(holder.tv_name.getText());
+                tv_price.setText(holder.tv_price.getText());
+                tv_sale.setText(holder.tv_sale.getText());
+                count.setMaxValue(15);
+                count.setMinValue(1);
+                count.setValue(1);
+
+
+                mBuyPopUpWindow.showAtLocation(rl_view, Gravity.BOTTOM, 0, 0);
+                lightOff();
+            }
+        });
+
     }
+
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position, List<Object> payloads) {
@@ -116,30 +169,45 @@ public class ShoppingMallAdapter extends RecyclerView.Adapter<ShoppingMallAdapte
         private TextView tv_name;
         private TextView tv_price;
         private TextView tv_sale;
-        private Button btn_buy_now;
-        private Button btn_buy_cart;
+        private Button btn_buy;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(final View itemView) {
             super(itemView);
 
             iv_icon = (ImageView) itemView.findViewById(R.id.iv_icon);
             tv_name = (TextView) itemView.findViewById(R.id.tv_name);
             tv_price = (TextView) itemView.findViewById(R.id.tv_price);
             tv_sale = (TextView) itemView.findViewById(R.id.tv_sale);
-            btn_buy_now = (Button) itemView.findViewById(R.id.btn_buy_now);
-            btn_buy_cart = (Button) itemView.findViewById(R.id.btn_buy_cart);
+            btn_buy = (Button) itemView.findViewById(R.id.btn_buy);
 
-            btn_buy_cart.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-//                    Toast.makeText(mContext, "立即购买", Toast.LENGTH_SHORT).show();
-//                    ShoppingMallBean.Wares wares = mWaresList.get(getLayoutPosition());
-//                    ShoppingCart cart = mCartProvider.conversion(wares);
-//                    mCartProvider.addData(cart);
-                }
-            });
 
         }
+    }
+
+    /**
+     * 显示时屏幕变暗
+     */
+    private void lightOff() {
+
+        WindowManager.LayoutParams layoutParams = ((Activity) mContext).getWindow().getAttributes();
+
+        layoutParams.alpha = 0.3f;
+
+        ((Activity) mContext).getWindow().setAttributes(layoutParams);
+
+    }
+
+    /**
+     * 显示时屏幕变亮
+     */
+    private void lightOn() {
+
+        WindowManager.LayoutParams layoutParams = ((Activity) mContext).getWindow().getAttributes();
+
+        layoutParams.alpha = 1.0f;
+
+        ((Activity) mContext).getWindow().setAttributes(layoutParams);
+
     }
 
 }

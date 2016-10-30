@@ -3,6 +3,7 @@ package com.wrk.capitalnews.base;
 import android.content.Context;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -46,6 +47,7 @@ public class BasePager {
     public ListView lv_leftmenu_menu;
     public DrawerLayout leftemenu_drawer;
     public ImageButton ib_basepager_switch;
+    public Button btn_cart;
 
     public BasePager(Context context, int type) {
         this.mContext = context;
@@ -64,6 +66,7 @@ public class BasePager {
             case VIEW_TYPE_NOML:
                 View nomalView = View.inflate(mContext, R.layout.basepager_layout, null);
                 ib_basepager_switch = (ImageButton) nomalView.findViewById(R.id.ib_basepager_switch);
+                btn_cart = (Button) nomalView.findViewById(R.id.btn_cart);
                 ButterKnife.bind(this, nomalView);
                 return nomalView;
             case VIEW_TYPE_DRAW:
