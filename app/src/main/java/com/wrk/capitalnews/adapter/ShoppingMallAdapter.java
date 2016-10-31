@@ -126,12 +126,15 @@ public class ShoppingMallAdapter extends RecyclerView.Adapter<ShoppingMallAdapte
                     mCartProvider.addData(cart);
                 }
                 mBuyPopUpWindow.dismiss();
-                ToastUtil.showToast(mContext,"亲,添加成功啦,去购物车结算吧~~~");
+                ToastUtil.showToast(mContext, "亲,添加成功啦,去购物车结算吧~~~");
             }
         });
 
         mBuyPopUpWindow.showAtLocation(rl_view, Gravity.BOTTOM, 0, 0);
-        lightOff();
+        if (mBuyPopUpWindow.isShowing()) {
+            lightOff();
+        }
+
     }
 
 
